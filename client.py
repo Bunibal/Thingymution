@@ -1,7 +1,7 @@
 from gameclass import *
 from network import Network
 
-# Zum laufen: py Pythonstuff\ThingyMutation\server.py
+# Zum laufen:py Pythonstuff\ThingyMutation\server.py
 # Konstanten
 FPSMENU = 60
 GROESSE = BREITE, HOEHE = 1536, 825
