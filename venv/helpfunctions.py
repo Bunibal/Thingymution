@@ -1,3 +1,4 @@
+import math, numpy as np
 # allgemeine Funktionen
 def abst(v1,v2):
         """Rechnet v2 minus v1"""
@@ -18,6 +19,7 @@ def addieren(v1,v2):
 
 def pInRect(p, rectInfo):
     return pygame.rect.Rect(rectInfo).collidepoint(p)
+
 def getSpeeds(speed, angle):
     angle = angle * math.pi / 180
     return math.cos(angle) * speed, math.sin(angle) * speed

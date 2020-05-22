@@ -1,5 +1,9 @@
 #Die ganzen verschiedenen Lebewesen
+import random
 from animalstats import *
+from helpfunctions import *
+from globalconstants import *
+from terrainstats import *
 class Lebewesen:
   desc = "basicLebewesen"
   def __init__(self, game, startpos = (400,400), startangle = None, info = None):

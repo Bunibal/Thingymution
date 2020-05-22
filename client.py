@@ -1,5 +1,6 @@
 from gameclass import *
 from network import Network
+from gameinfo import *
 
 # Zum laufen:py Pythonstuff\ThingyMutation\server.py
 # Konstanten

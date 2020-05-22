@@ -4,6 +4,7 @@ import sys
 import pickle
 from gameclass import *
 from pygame.time import Clock
+from gameinfo import *
 
 TIERCAP = 10000
 #Aktionen
@@ -14,8 +15,9 @@ DOEVENT = 2
 MOUSETILE = 3
 KILLSERVER = 322
 
-
-server = "192.168.0.172"
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+server = IPAddr
 port = 5555
 mapNr = int(input("Map:"))
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
