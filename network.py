@@ -1,5 +1,10 @@
 import socket, pickle
 #Konstanten für Kommunikation
+SPAWNTIER = 0
+GIVEMUTATION = 1
+DOEVENT = 2
+MOUSETILE = 3
+KILLSERVER = 322
 
 class Network:
     def __init__(self, serverIp):

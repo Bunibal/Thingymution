@@ -1,4 +1,21 @@
+import os
+from globalconstants import *
+
+GROESSE = BREITE, HOEHE = 1536, 825
+TRANSPARENCY = (13, 66, 23)
+
+pygame.init()
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
+screen = pygame.display.set_mode(GROESSE)
+pygame.display.set_caption("Thingymution")
+
+# Schriftarten
+FONT1 = pygame.font.SysFont("chiller", 50)
+FONT2 = pygame.font.SysFont("Times", 30)
+
 # Bildgroessen
+origPath = os.getcwd()
+os.chdir(origPath + "/resources")
 BILDGROESSESCHNECKE = (16, 8)
 BILDGROESSEMAUS = (16, 16)
 BILDGROESSEKRABBE = (16, 8)
@@ -64,3 +81,5 @@ cardintboost = pygame.transform.scale(pygame.image.load("cardgetintelligent.png"
 cardgetflying = pygame.transform.scale(pygame.image.load("cardgetflying.png").convert(), GROESSECARD)
 # jetzt die Umweltkarten
 cardmeteorshower = pygame.transform.scale(pygame.image.load("cardmeteor.png").convert(), GROESSECARD)
+
+os.chdir(origPath)

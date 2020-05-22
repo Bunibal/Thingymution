@@ -1,15 +1,15 @@
 #letzte Änderung:14.04.2020
 #Sebastian Bittner, Stephan Buchner
 SZABTEST = False
-from terrainstats import *
-from helpfunctions import *
 from animals import *
 
+origPath = os.getcwd()
 os.chdir(os.getcwd() + "/resources")
 
 mapFile0 = pytmx.TiledMap("maplvl1.tmx")
 mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
 MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60,60))]
+os.chdir(origPath)
 
 TERRAIN = {"hexagonal1":(RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
 "berge": (HIGHMOUNTAIN, SNOWYMOUNTAIN), "grass":(DESERT, HILLS, STEPPE),

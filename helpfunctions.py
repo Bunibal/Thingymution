@@ -1,4 +1,4 @@
-import math, numpy as np
+import math, numpy as np, pygame
 # allgemeine Funktionen
 def abst(v1,v2):
         """Rechnet v2 minus v1"""
@@ -30,3 +30,11 @@ def calcAngle(pos):
 
 def getTile(pos):
     return mult(pos, 1/16, True)
+
+def zuschneiden_image(image, rectInfo, scale=1):
+    rect = pygame.rect.Rect(rectInfo)
+    newImage = pygame.transform.chop(image, (rect.right, rect.bottom, 10000, 10000))  # spaghetti
+    newImage = pygame.transform.chop(newImage, (0, 0, rect.left, rect.top))
+    size = newImage.get_rect().size
+    newImage = pygame.transform.scale(newImage, mult(size, scale, True))
+    return newImage

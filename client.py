@@ -1,51 +1,27 @@
 from gameclass import *
-from network import Network
+from network import *
 from gameinfo import *
+from Bildermusicsounds import * #Achtung! Initialisiert pygame
+from cards import *
+from widgets import *
+
+origPath = os.getcwd()
+os.chdir(origPath + "/resources")
 
 # Zum laufen:py Pythonstuff\ThingyMutation\server.py
 # Konstanten
 FPSMENU = 60
-GROESSE = BREITE, HOEHE = 1536, 825
-BARBREITE = int(BREITE - BREITE / 6)
-WEISS = (255, 255, 255)
-SCHWARZ = (0, 0, 0)
-TRANSPARENCY = (13, 66, 23)
-FARBENSPIELER = [(0, 0, 255), (255, 0, 0),
-                 (0, 255, 0), (0, 255, 255), (255, 255, 0), (255, 0, 255), (150, 255, 150)]
 
-pygame.init()
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
-screen = pygame.display.set_mode(GROESSE)
-pygame.display.set_caption("Thingymution")
+BARBREITE = int(BREITE - BREITE / 6)
+
 
 SONG_END = pygame.USEREVENT + 1
 
-HANDKARTEN = 6
-STONEGEWICHTUNG = 4
-STEINEANZAHL = 5
 ZOOM = 0.9
-ANZAHLKARTENSPIELEN = 3
-# menu
-GROESSEBUTTONS = 300
-# Game
-GROESSEBUTTONSGAME = 200
-GROESSEBUTTONSNEUERZUG = 200
-GROESSECARD = (200, 300)
 
 BUTTONS = ["Singleplayer", "Multiplayer", "Options", "Exit Game"]
 LVLS = ["Tutorial", "Sandbox", "Level 1", "Level 2"]
-# Karten
-MUTATIONEN = 0
-UMWELT = 1
-LANDTIERE = 3
-WASSERTIERE = 4
-FLIEGER = 2
-# Kommunikation mit Server
-SPAWNTIER = 0
-GIVEMUTATION = 1
-DOEVENT = 2
-MOUSETILE = 3
-KILLSERVER = 322
+
 # Bildgroessen
 BILDGROESSESCHNECKE = (16, 8)
 BILDGROESSEMAUS = (16, 16)
@@ -57,66 +33,6 @@ BILDGROESSEFUCHS = (16, 16)
 BILDGROESSEKANINCHEN = (14, 14)
 BILDGROESSEZIEGE = (20, 20)
 BILDGROESSESINGVOGEL = (16, 16)
-# music and backgrounds
-
-menubackground = pygame.image.load("menubackground.png").convert()
-menubackground = pygame.transform.scale(menubackground, GROESSE)
-
-music = ["1 Great pyramids.mp3", "2 Face to face.mp3", "3 Life in forest.mp3", "1.mp3",
-         "2.mp3", "4.mp3", "6.mp3", "8.mp3", "11.mp3", "13.mp3", "15.mp3", "18.mp3"]
-
-# Hier laden wir ma alle Bilder rein
-mapPicture0 = pygame.image.load("maplvl1.png").convert()
-kleinereMap = pygame.image.load("maplvl2.png").convert()
-MAPPICTURES = [mapPicture0, kleinereMap]
-schneckeImage = pygame.image.load("slug.png").convert_alpha()
-mausImage = pygame.image.load("mouse.png").convert_alpha()
-krabbeImage = pygame.image.load("crab.png")
-krabbeImage.set_colorkey(TRANSPARENCY)
-krabbeImage = krabbeImage.convert_alpha()
-falkeImage = pygame.image.load("falcon.png").convert_alpha()
-falkeFliegendImage = pygame.image.load("falconflying.png").convert_alpha()
-kaeferImage = pygame.image.load("bug.png")
-kaeferImage.set_colorkey(TRANSPARENCY)
-kaeferImage = kaeferImage.convert_alpha()
-doktorfischimage = pygame.image.load("doctorfish.png").convert_alpha()
-eelimage = pygame.image.load("eel.png").convert_alpha()
-fuchsImage = pygame.image.load("fox.png").convert_alpha()
-kaninchenImage = pygame.image.load("rabbit.png").convert_alpha()
-ziegeImage = pygame.image.load("goat.png").convert_alpha()
-singvogelImage = pygame.image.load("singvogel.png").convert_alpha()
-singvogelFliegendImage = pygame.image.load("singvogelflying.png").convert_alpha()
-buttons1 = pygame.transform.scale(pygame.image.load("buttons1.png").convert(),
-                                  (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
-bar = pygame.transform.scale(pygame.image.load("bar.png").convert(), (BREITE // 6, HOEHE))
-
-# hier GUI
-buttonzug = pygame.transform.scale(pygame.image.load("zugbutton.png").convert(),
-                                   (GROESSEBUTTONSNEUERZUG, GROESSEBUTTONSNEUERZUG))
-greystone = pygame.transform.scale(pygame.image.load("Magic_button_grey.png").convert(), (50, 50))
-
-# Karten zuerst die Tiere
-carddefault = pygame.transform.scale(pygame.image.load("carddefault.png").convert(), GROESSECARD)
-cardfalcon = pygame.transform.scale(pygame.image.load("cardfalcon.png").convert(), GROESSECARD)
-cardslug = pygame.transform.scale(pygame.image.load("cardslug.png").convert(), GROESSECARD)
-cardmouse = pygame.transform.scale(pygame.image.load("cardmouse.png").convert(), GROESSECARD)
-cardbug = pygame.transform.scale(pygame.image.load("cardbug.png").convert(), GROESSECARD)
-carddoctorfish = pygame.transform.scale(pygame.image.load("carddoctorfish.png").convert(), GROESSECARD)
-cardcrab = pygame.transform.scale(pygame.image.load("cardcrab.png").convert(), GROESSECARD)
-cardeel = pygame.transform.scale(pygame.image.load("cardeel.png").convert(), GROESSECARD)
-# jetzt kommen die MUTATIONEN
-cardgetfast = pygame.transform.scale(pygame.image.load("cardgetfast.png").convert(), GROESSECARD)
-cardfitnessboost = pygame.transform.scale(pygame.image.load("cardfitnessboost.png").convert(), GROESSECARD)
-cardpowerboost = pygame.transform.scale(pygame.image.load("cardpowerboost.png").convert(), GROESSECARD)
-cardintboost = pygame.transform.scale(pygame.image.load("cardgetintelligent.png").convert(), GROESSECARD)
-cardgetflying = pygame.transform.scale(pygame.image.load("cardgetflying.png").convert(), GROESSECARD)
-# jetzt die Umweltkarten
-cardmeteorshower = pygame.transform.scale(pygame.image.load("cardmeteor.png").convert(), GROESSECARD)
-if not SZABTEST:
-    pass
-else:
-    # krabbeImage = pygame.image.load("mouse.png").convert()
-    pass
 
 #### images to description
 IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
@@ -131,18 +47,8 @@ IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Fuchs": (fuchsImage, None, BILDGROESSEFUCHS),
           "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
           "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
-# Schriftarten
-FONT1 = pygame.font.SysFont("chiller", 50)
-FONT2 = pygame.font.SysFont("Times", 30)
 
 
-def zuschneiden_image(image, rectInfo, scale=1):
-    rect = pygame.rect.Rect(rectInfo)
-    newImage = pygame.transform.chop(image, (rect.right, rect.bottom, 10000, 10000))  # spaghetti
-    newImage = pygame.transform.chop(newImage, (0, 0, rect.left, rect.top))
-    size = newImage.get_rect().size
-    newImage = pygame.transform.scale(newImage, mult(size, scale, True))
-    return newImage
 
 
 # Karten############################################################################################################################
@@ -162,258 +68,8 @@ def choosecardintype(anzahl_karten):
     return handcards
 
 
-class ButtonNormal:
-    def __init__(self, pos, label):
-        self.font = FONT1
-        self.pos, self.label = pos, label
-        self.rect = pygame.rect.Rect(self.pos, (GROESSEBUTTONS, GROESSEBUTTONS // 5))
-        self.text = self.font.render(self.label, 1, SCHWARZ)
 
-    def blitButton(self, screen):
-        pygame.draw.rect(screen, (100, 100, 0), self.rect)
-        screen.blit(self.text, (self.pos[0] + 20, self.pos[1] + 20))
 
-    def checkCollision(self, pos):
-        return self.rect.collidepoint(pos)
-
-
-class ButtonGame(ButtonNormal):
-    def __init__(self, pos, label):
-        ButtonNormal.__init__(self, pos, label)
-        self.rect = pygame.rect.Rect(self.pos, (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
-
-    def blitButton(self, screen):
-        screen.blit(buttons1, self.rect)
-        screen.blit(self.text, (self.pos[0] + 20, self.pos[1] + 20))
-
-
-class TextFeld:
-    def __init__(self, pos, initText, font, laenge=400):
-        self.pos = pos
-        self.font = font
-        self.text = initText
-        self.rendered = font.render(self.text, 1, WEISS)
-        self.laenge = 400
-
-    def blitTextFeld(self, screen):
-        pygame.draw.rect(screen, SCHWARZ,
-                         (self.pos, (self.laenge, 60)))
-        screen.blit(self.rendered, self.pos)
-
-    def keystroke(self, event):
-        if event.key == pygame.K_BACKSPACE:
-            self.text = self.text[:-1]
-        else:
-            self.text = self.text + event.unicode
-        self.rendered = self.font.render(self.text, 1, WEISS)
-
-    def backspace(self):
-        self.text
-
-
-class Karte:
-    def __init__(self):
-        self.image = defaultKarte
-
-
-class SpawnTier(Karte):
-    def __init__(self, art, image, typ, anzahl=1):
-        self.image = image
-        self.type = typ
-        self.art = art
-        self.desc = "Spawne " + self.art
-        self.anz = anzahl
-
-    def spielen(self, execlass):
-        for i in range(self.anz):
-            execlass.tiere.append(self.art)
-
-
-class Spawnfalcon(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Falke", cardfalcon, "Flieger", 2)
-        ##self.type = "Flieger"
-    ##def spielen(self, game):
-    ##game.tiere.append("Falke")
-
-
-class Spawnbird(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Singvogel", carddefault, "Flieger", 3)
-
-
-class Spawnslug(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Schnecke",
-                           cardslug, "Landtier", 3)
-
-
-class Spawncrab(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Krabbe",
-                           cardcrab, "Wassertier", 2)
-
-
-class Spawnmouse(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Maus",
-                           cardmouse, "Landtier", 2)
-
-
-class Spawnbug(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Käfer",
-                           cardbug, "Landtier", 3)
-
-
-class Spawndoctorfish(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Doktorfisch",
-                           carddoctorfish, "Wassertier", 3)
-
-
-class Spawnfox(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Fuchs",
-                           carddefault, "Landtier", 2)
-
-
-class Spawnrabbit(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Kaninchen",
-                           carddefault, "Landtier", 2)
-
-
-class Spawngoat(SpawnTier):
-    def __init__(self):
-        SpawnTier.__init__(self, "Ziege",
-                           carddefault, "Landtier", 1)
-
-
-class Getfast(Karte):
-    def __init__(self):
-        self.image = cardgetfast
-        self.type = "Mutation"
-        self.desc = "Geschwindigkeitsboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTGETFAST")
-
-
-class Fitnessboost(Karte):
-    def __init__(self):
-        self.image = cardfitnessboost
-        self.type = "Mutation"
-        self.desc = "Fitnessboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTFITNESSBOOST")
-
-
-class Powerboost(Karte):
-    def __init__(self):
-        self.image = cardpowerboost
-        self.type = "Mutation"
-        self.desc = "Powerboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTPOWERBOOST")
-
-
-class IntBoost(Karte):
-    def __init__(self):
-        self.image = cardintboost
-        self.type = "Mutation"
-        self.desc = "Intelligenzboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTINTBOOST")
-
-
-class EvasionBoost(Karte):
-    def __init__(self):
-        self.image = carddefault
-        self.type = "Mutation"
-        self.desc = "Evasionboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTEVASIONBOOST")
-
-
-class PrecisionBoost(Karte):
-    def __init__(self):
-        self.image = carddefault
-        self.type = "Mutation"
-        self.desc = "Precisionboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append("MUTPRECISIONBOOST")
-
-
-class Getflying(Karte):
-    def __init__(self):
-        self.image = cardgetflying
-        self.type = "Mutation"
-        self.desc = "fliegt"
-
-    def spielen(self, game):
-        game.mutations_list.append("MUTGETFLYING")
-
-
-class EventKarte(Karte):
-    def __init__(self):
-        pass
-
-
-class Meteorshower(Karte):
-    def __init__(self):
-        self.image = cardmeteorshower
-        self.type = "Umwelt"
-        self.desc = "Meteorschauer"
-        self.targeting = "NONE"
-
-    def spielen(self, execlass):
-        execlass.doevent("Meteor")
-
-
-class Heatwave(Karte):
-    def __init__(self):
-        self.image = carddefault
-        self.type = "Umwelt"
-        self.desc = "Hitzewelle"
-        self.targeting = "NONE"
-
-    def spielen(self, execlass):
-        execlass.doevent("Heatwave")
-
-
-class Coolwave(Karte):
-    def __init__(self):
-        self.image = carddefault
-        self.type = "Umwelt"
-        self.desc = "Kältewelle"
-        self.targeting = "NONE"
-
-    def spielen(self, execlass):
-        execlass.doevent("Coolwave")
-
-
-class Granade(Karte):
-    def __init__(self):
-        self.image = carddefault
-        self.type = "Umwelt"
-        self.desc = "Granate"
-        self.targeting = "TILE"
-        self.targetNbr = 1
-
-    def spielen(self, execlass, targets):
-        execlass.doevent("Granade", targets)
 
 
 # Klasse die alles ausfuehrt###############################################################
@@ -1173,9 +829,6 @@ class Execute:
         self.msg.append((KILLSERVER,))
 
 
-KARTEN_VORHANDEN = {MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
-                    UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
-                    LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
-                    WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}
+
 
 Execute(IMAGES)
