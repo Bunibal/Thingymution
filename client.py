@@ -1,6 +1,8 @@
 from gameinfo import *
 from network import *
 from widgets import *
+from skilltree import *
+from cards import *
 
 origPath = os.getcwd()
 os.chdir(origPath + "/resources")
@@ -205,12 +207,12 @@ class Execute:
         pygame.mixer.music.set_endevent(SONG_END)
         self.inGame = True
         self.inskilltree = False
+        self.testsktr = Skilltree(pygame.Surface(GROESSE), "slug")
         mausx, mauxy = self.mauspos = (0, 0)
         mapverschieben = False
         self.oikeymemory = [False, False]
         self.button_list = TIERE
         self.buttonsgame = []
-        self.txtgame = []
         self.tiere = []
         i = 40
         self.font2 = pygame.font.SysFont("Times", 30)
@@ -218,17 +220,12 @@ class Execute:
         self.mapzoomed = zuschneiden_image(self.mapPicture,
                                            self.getMapPos((0, 0)) + mult((BARBREITE, HOEHE), 1, True))
         for label in self.button_list:
-            button = pygame.sprite.Sprite()
-            button.rect = pygame.rect.Rect(BARBREITE + 30, i,
-                                           GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5)
-            button.image = buttons1
+            button = ButtonGame((BARBREITE + 30, i), label)
             i += 50
             self.buttonsgame.append(button)
-            text = self.font2.render(label, 1, SCHWARZ)
-            self.txtgame.append(text)
-            self.framescounterzug = 0
-            self.msg = [False]
-        self.buttonsgame.append(ButtonGame(BARBREITE + 30, i, "Skilltree"))
+        self.buttonsgame.append(ButtonGame((BARBREITE + 30, i), "Skilltree"))
+        self.framescounterzug = 0
+        self.msg = [False]
 
         # self.interpretServerMsg(incMsg)
         while self.inGame:
@@ -287,13 +284,13 @@ class Execute:
                         click = True
                         i = 0
                         for it in TIERE:
-                            if self.buttonsgame[i].rect.collidepoint(self.mauspos):
+                            if self.buttonsgame[i].checkCollision(self.mauspos):
                                 if click:
                                     self.tiere.append(it)
                             i += 1
-                        if self.buttonsgame[-1].rect.collidepoint(self.maupos):
+                        if self.buttonsgame[-1].checkCollision(self.mauspos):
                             if click:
-                                Skilltree(pygame.Surface(GROESSE), "slug")
+                                self.inskilltree = not self.inskilltree
                     if event.button == pygame.BUTTON_RIGHT:
                         for creature in self.tiere:
                             self.spawn(creature, self.getMapPos(self.mauspos), 10)
@@ -565,6 +562,7 @@ class Execute:
         pass
 
     def animieren(self):
+
         self.screen.fill((150, 150, 0))
         mapblitpos = [0, 0]
         for i in (0, 1):
@@ -588,15 +586,13 @@ class Execute:
         if self.zeigeStats:
             self.screen.blit(bar, (0, 0))
         for button in self.buttonsgame:
-            self.screen.blit(button.image, button.rect)
-        i = 40
-        for label in self.txtgame:
-            self.screen.blit(label, (int(BARBREITE + 50), i))
-            i += 50
+            button.blitButton(self.screen)
         if self.singleplayer:
             self.statusSinglePlayer()
         else:
             self.statusMultiPlayer()
+        if self.inskilltree:
+            self.testsktr.blitSkilltree(self.screen, (0,0))
         pygame.display.flip()
 
     def standardHandling(self, event):

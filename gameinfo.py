@@ -1,5 +1,4 @@
 from gameclass import *
-from cards import *
 POINTS = {"Maus": 4, "Schnecke":1, "Krabbe": 1,
         "Doktorfisch": 1, "Falke": 9, "Käfer":1, "Fuchs": 10,
         "Kaninchen": 4, "Ziege": 20, "Singvogel": 3}
@@ -12,14 +11,3 @@ EVENTS = {"Meteor": Game.meteorShower, "Coolwave": Game.coolWave,
 
 ZUGBUTTONS =["Mutationen","Umwelt","Flieger","Landtiere","Wassertiere"]
 
-# Kartenarten
-MUTATIONEN = 0
-UMWELT = 1
-LANDTIERE = 3
-WASSERTIERE = 4
-FLIEGER = 2
-
-KARTEN_VORHANDEN = {MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
-                    UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
-                    LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
-                    WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}

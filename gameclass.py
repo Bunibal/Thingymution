@@ -1,12 +1,12 @@
-#letzte Änderung:14.04.2020
+#letzte Änderung:25.5.2020
 #Sebastian Bittner, Stephan Buchner
 SZABTEST = False
 import pygame, random, sys, os, math, pytmx, numpy as np
 from terrainstats import *
 from helpfunctions import *
 from animals import *
-
-os.chdir(os.getcwd() + "/resources")
+origPath = os.getcwd()
+os.chdir(origPath + "/resources")
 if True:# global variables
     FPSGAME = 20
     TERRAIN = {"hexagonal1":(RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
@@ -18,6 +18,7 @@ if True:# global variables
                 "Kaninchen": 4, "Ziege": 20, "Singvogel": 3}
     mapFile0 = pytmx.TiledMap("maplvl1.tmx")
     mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
+    os.chdir(origPath)
     MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60,60))]
     SEKUNDENZUG = 30
     GAMELENGTH = 600
