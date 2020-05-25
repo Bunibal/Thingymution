@@ -1,20 +1,54 @@
 #letzte Änderung:14.04.2020
 #Sebastian Bittner, Stephan Buchner
 SZABTEST = False
+import pygame, random, sys, os, math, pytmx, numpy as np
+from terrainstats import *
+from helpfunctions import *
 from animals import *
 
-origPath = os.getcwd()
 os.chdir(os.getcwd() + "/resources")
+if True:# global variables
+    FPSGAME = 20
+    TERRAIN = {"hexagonal1":(RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
+        "berge": (HIGHMOUNTAIN, SNOWYMOUNTAIN), "grass":(DESERT, HILLS, STEPPE),
+        "overworld": (FOREST1, LOWMOUNTAINS),"water": (OCEAN,),
+        "watergrasssand": (COASTWATER, BEACH, COASTGRASS)}
+    POINTS = {"Maus": 4, "Schnecke":1, "Krabbe": 1,
+                "Doktorfisch": 1, "Falke": 9, "Käfer":1, "Fuchs": 10,
+                "Kaninchen": 4, "Ziege": 20, "Singvogel": 3}
+    mapFile0 = pytmx.TiledMap("maplvl1.tmx")
+    mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
+    MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60,60))]
+    SEKUNDENZUG = 30
+    GAMELENGTH = 600
+    SEKUNDENPUNKTE = 15
+    POPANPASSENINTERVAL = 1 #soviele Frames pro populationAnpassen
+    if True:#Modellfaktoren
+        TODFAKTOR = 0.005
+        TEMPANPASSKOEFF = 0.01 # Wie stark Temperaturanpassung sich auf die Fitness auswirkt
+        ANGRIFFHUNGER = 0.1
+        PFLANZENREGENERATION = 0.1
+        MAXPFLANZEN = 2
+        ANPASSUNGSEKUNDEN = 30
+        ANPASSUNGSCHANCE = 3
 
-mapFile0 = pytmx.TiledMap("maplvl1.tmx")
-mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
-MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60,60))]
-os.chdir(origPath)
+        #Mutationenstats
+        GETFASTBONUS = 0.2
+        FITNESSBOOSTBONUS = 0.2
+        EVASIONBOOSTBONUS = 1
+        PRECISIONBOOSTBONUS = 1
+        INTBOOSTBONUS = 1
+        INTBOOSTMULT = 2
+# Umwelkartenstats
+        DEADDUDESMETEOR = 5
+        HEATWAVEAMOUNT = 20
+        HEATWAVEDURATION = 60
+        COOLWAVEAMOUNT = 20
+        COOLWAVEDURATION = 60
 
-TERRAIN = {"hexagonal1":(RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
-"berge": (HIGHMOUNTAIN, SNOWYMOUNTAIN), "grass":(DESERT, HILLS, STEPPE),
-"overworld": (FOREST1, LOWMOUNTAINS),"water": (OCEAN,),
-"watergrasssand": (COASTWATER, BEACH, COASTGRASS)}
+
+# Tiere, Objekte
+# Ereignisse
 
 def getTileTerrainAndSet(map, pos, layer = 3, schonGefunden = [-1,-1,-1,-1]):
     try:
@@ -255,7 +289,13 @@ class Game:
 #BUTTONSGAME = {"Maus":Maus, "Schnecke":Schnecke, "Krabbe": Krabbe,
 #    "Doktorfisch": Doktorfisch, "Falke": Falke, "Käfer":Kaefer,
 #    "Fuchs":Fuchs}
-
+TIERE = {"Maus":Maus, "Schnecke":Schnecke, "Krabbe": Krabbe,
+    "Doktorfisch": Doktorfisch, "Falke": Falke, "Singvogel": Singvogel,
+    "Käfer":Kaefer, "Fuchs":Fuchs, "Kaninchen": Kaninchen,
+    "Ziege": Ziege,}
+EVENTS = {"Meteor": Game.meteorShower, "Coolwave": Game.coolWave,
+        "Heatwave":Game.heatWave, "Granade": Game.granade}
+ZUGBUTTONS =["Mutationen","Umwelt","Flieger","Landtiere","Wassertiere"]
 
 if __name__ == "__main__":
     def createAndMonitor(typ, pos, mutations = [], steps = 2000, printint = 200):

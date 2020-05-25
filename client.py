@@ -1,8 +1,5 @@
-from gameclass import *
-from network import *
 from gameinfo import *
-from Bildermusicsounds import * #Achtung! Initialisiert pygame
-from cards import *
+from network import *
 from widgets import *
 
 origPath = os.getcwd()
@@ -14,13 +11,12 @@ FPSMENU = 60
 
 BARBREITE = int(BREITE - BREITE / 6)
 
-
 SONG_END = pygame.USEREVENT + 1
 
 ZOOM = 0.9
 
 BUTTONS = ["Singleplayer", "Multiplayer", "Options", "Exit Game"]
-LVLS = ["Tutorial", "Sandbox", "Level 1", "Level 2"]
+LVLS = ["Tutorial", "Sandbox", "Level 1", "Level 2", "Menu"]
 
 # Bildgroessen
 BILDGROESSESCHNECKE = (16, 8)
@@ -49,8 +45,6 @@ IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
 
 
-
-
 # Karten############################################################################################################################
 
 def handkarten(stonetype):
@@ -66,10 +60,6 @@ def choosecardintype(anzahl_karten):
         if card != None:
             handcards.append(card())
     return handcards
-
-
-
-
 
 
 # Klasse die alles ausfuehrt###############################################################
@@ -214,6 +204,7 @@ class Execute:
     def runGame(self):
         pygame.mixer.music.set_endevent(SONG_END)
         self.inGame = True
+        self.inskilltree = False
         mausx, mauxy = self.mauspos = (0, 0)
         mapverschieben = False
         self.oikeymemory = [False, False]
@@ -237,8 +228,9 @@ class Execute:
             self.txtgame.append(text)
             self.framescounterzug = 0
             self.msg = [False]
-        # self.interpretServerMsg(incMsg)
+        self.buttonsgame.append(ButtonGame(BARBREITE + 30, i, "Skilltree"))
 
+        # self.interpretServerMsg(incMsg)
         while self.inGame:
             self.uhr.tick(FPSGAME)
             if not self.singleplayer:
@@ -299,13 +291,13 @@ class Execute:
                                 if click:
                                     self.tiere.append(it)
                             i += 1
+                        if self.buttonsgame[-1].rect.collidepoint(self.maupos):
+                            if click:
+                                Skilltree(pygame.Surface(GROESSE), "slug")
                     if event.button == pygame.BUTTON_RIGHT:
                         for creature in self.tiere:
                             self.spawn(creature, self.getMapPos(self.mauspos), 10)
                         self.tiere = []
-
-                    ##if event.button == pygame.BUTTON_RIGHT:
-                    ##print(self.getTerrain(self.mauspos))
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
@@ -372,7 +364,6 @@ class Execute:
         cardpick = False
         kartenspielen = False
         self.zugpause = True
-        # WHILESCHLEIFEBOIZZZZZZZZ
         while self.zugpause:
             self.uhr.tick(FPSGAME)
             if not self.singleplayer:
@@ -827,8 +818,6 @@ class Execute:
 
     def killserver(self):
         self.msg.append((KILLSERVER,))
-
-
 
 
 Execute(IMAGES)
