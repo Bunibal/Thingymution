@@ -1,5 +1,5 @@
-# statsslug
 
+# statsslug
 SCHNECKEV = 2.5
 SCHNECKEESSEN =  0.05 #Essen pro Tier und Sekunde
 SCHNECKEHUNGERRES = 2

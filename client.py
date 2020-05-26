@@ -4,8 +4,6 @@ from widgets import *
 from skilltree import *
 from cards import *
 
-origPath = os.getcwd()
-os.chdir(origPath + "/resources")
 
 # Zum laufen:py Pythonstuff\ThingyMutation\server.py
 # Konstanten
@@ -35,8 +33,6 @@ IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
 
 
-# Karten############################################################################################################################
-
 def handkarten(stonetype):
     anzahl_karten = random.choices(list(range(len(stonetype))),
                                    [STONEGEWICHTUNG * zahl_steine + 1 for zahl_steine in stonetype], k=HANDKARTEN)
@@ -53,6 +49,7 @@ def choosecardintype(anzahl_karten):
 
 
 # Klasse die alles ausfuehrt###############################################################
+
 class Execute:
     def __init__(self, images):
         self.origImages = images
@@ -415,8 +412,6 @@ class Execute:
                 self.zoom(ZOOM, False)
             if self.oikeymemory[1] and self.zoomfaktor <= 4:
                 self.zoom(1 / ZOOM, False)
-            ##for obj in self.livingThings:
-            ##      obj.bildanpassen(self.zoomfaktor)
             for event in pygame.event.get():
                 self.standardHandling(event)
                 mx, my = pygame.mouse.get_pos()

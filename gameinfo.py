@@ -11,3 +11,14 @@ EVENTS = {"Meteor": Game.meteorShower, "Coolwave": Game.coolWave,
 
 ZUGBUTTONS =["Mutationen","Umwelt","Flieger","Landtiere","Wassertiere"]
 
+# Kartenarten
+MUTATIONEN = 0
+UMWELT = 1
+LANDTIERE = 3
+WASSERTIERE = 4
+FLIEGER = 2
+
+KARTEN_VORHANDEN = {MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
+                    UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
+                    LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
+                    WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}
