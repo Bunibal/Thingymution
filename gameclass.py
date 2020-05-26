@@ -20,10 +20,6 @@ if True:# global variables
     mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
     os.chdir(origPath)
     MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60,60))]
-    SEKUNDENZUG = 30
-    GAMELENGTH = 600
-    SEKUNDENPUNKTE = 15
-    POPANPASSENINTERVAL = 1 #soviele Frames pro populationAnpassen
     if True:#Modellfaktoren
         TODFAKTOR = 0.005
         TEMPANPASSKOEFF = 0.01 # Wie stark Temperaturanpassung sich auf die Fitness auswirkt

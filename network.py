@@ -8,7 +8,7 @@ KILLSERVER = 322
 
 NOTURN = 100
 TURN = 101
-ENDGAME = 102
+GAMEOVER = 102
 
 class Network:
     def __init__(self, serverIp):

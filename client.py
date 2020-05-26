@@ -20,18 +20,6 @@ ZOOM = 0.9
 BUTTONS = ["Singleplayer", "Multiplayer", "Options", "Exit Game"]
 LVLS = ["Tutorial", "Sandbox", "Level 1", "Level 2", "Menu"]
 
-# Bildgroessen
-BILDGROESSESCHNECKE = (16, 8)
-BILDGROESSEMAUS = (16, 16)
-BILDGROESSEKRABBE = (16, 8)
-BILDGROESSEFALKE = (16, 16)
-BILDGROESSEKAEFER = (16, 8)
-BILDGROESSEDOKTORFISCH = (16, 8)
-BILDGROESSEFUCHS = (16, 16)
-BILDGROESSEKANINCHEN = (14, 14)
-BILDGROESSEZIEGE = (20, 20)
-BILDGROESSESINGVOGEL = (16, 16)
-
 #### images to description
 IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
@@ -206,6 +194,7 @@ class Execute:
     def runGame(self):
         pygame.mixer.music.set_endevent(SONG_END)
         self.inGame = True
+        self.gameover = False
         self.inskilltree = False
         self.testsktr = Skilltree(pygame.Surface(GROESSE), "slug")
         mausx, mauxy = self.mauspos = (0, 0)
@@ -214,11 +203,11 @@ class Execute:
         self.button_list = TIERE
         self.buttonsgame = []
         self.tiere = []
-        i = 40
         self.font2 = pygame.font.SysFont("Times", 30)
         self.zoomfaktor = 1
         self.mapzoomed = zuschneiden_image(self.mapPicture,
                                            self.getMapPos((0, 0)) + mult((BARBREITE, HOEHE), 1, True))
+        i = 40
         for label in self.button_list:
             button = ButtonGame((BARBREITE + 30, i), label)
             i += 50
@@ -593,6 +582,8 @@ class Execute:
             self.statusMultiPlayer()
         if self.inskilltree:
             self.testsktr.blitSkilltree(self.screen, (0,0))
+        if self.gameover:
+            self.endgamescreen()
         pygame.display.flip()
 
     def standardHandling(self, event):
@@ -730,6 +721,14 @@ class Execute:
                     self.screen.blit(text, [30, a])
                     a += 30
 
+    def endgamescreen(self):
+        text = FONT2.render("Game over", 1, SCHWARZ)
+        screen.blit(text, (400, 200))
+        for player in range(self.playerCount):
+            text = self.font2.render("Spieler %i: %i"%(player, self.points[player]), 1,
+                                                FARBENSPIELER[player])
+            screen.blit(text, (400, 300 + 100 * player))
+
     def getMapPos(self, pos):
         return mult(abst(self.posmap, pos), 1 / self.zoomfaktor)
 
@@ -743,7 +742,7 @@ class Execute:
     def interpretServerMsg(self, incMsg):
         if incMsg is not None:
             try:
-                forcePausing = incMsg[0]
+                action = incMsg[0]
                 self.points = incMsg[1][0]
                 self.playerCount = incMsg[1][1]
                 self.gameInfo = incMsg[2]
@@ -752,8 +751,10 @@ class Execute:
             except:
                 print(incMsg, "does not have the right format.")
 
-            if forcePausing and not self.zugpause:
+            if action == TURN and not self.zugpause:
                 self.neuerZug()
+            elif action == GAMEOVER:
+                self.gameover = True
         else:
             print("Empfangene Information fehlerhaft")
 
