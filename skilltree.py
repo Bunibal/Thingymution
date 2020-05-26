@@ -50,6 +50,11 @@ class Skilltree:
     def blitSkilltree(self, surface, pos):
         surface.blit(self.image, pos)
 
+    def clickedMutation(self, pos):
+        for button in self.buttons:
+            if button.checkCollision(pos):
+                return button.mutation
+
 
 class Mutationbutton:
     def __init__(self, mutation, pos):

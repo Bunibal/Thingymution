@@ -1,11 +1,11 @@
-import pygame, sys, os, pygame, pytmx, numpy as np
+from terrainstats import *
+
+# Spielmodifier
 FPSGAME = 20
-
-
 SEKUNDENZUG = 30
 GAMELENGTH = 600
 SEKUNDENPUNKTE = 15
-POPANPASSENINTERVAL = 1 #soviele Frames pro populationAnpassen
+POPANPASSENINTERVAL = 1  # soviele Frames pro populationAnpassen
 
 HANDKARTEN = 6
 STONEGEWICHTUNG = 4
@@ -13,20 +13,32 @@ STEINEANZAHL = 5
 ANZAHLKARTENSPIELEN = 3
 # Modellfaktoren
 TODFAKTOR = 0.005
-TEMPANPASSKOEFF = 0.01 # Wie stark Temperaturanpassung sich auf die Fitness auswirkt
+TEMPANPASSKOEFF = 0.01  # Wie stark Temperaturanpassung sich auf die Fitness auswirkt
 ANGRIFFHUNGER = 0.1
 PFLANZENREGENERATION = 0.1
 MAXPFLANZEN = 2
 ANPASSUNGSEKUNDEN = 30
 ANPASSUNGSCHANCE = 3
 
-#Mutationenstats
+#
+TERRAIN = {"hexagonal1": (RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
+           "berge": (HIGHMOUNTAIN, SNOWYMOUNTAIN), "grass": (DESERT, HILLS, STEPPE),
+           "overworld": (FOREST1, LOWMOUNTAINS), "water": (OCEAN),
+           "watergrasssand": (COASTWATER, BEACH, COASTGRASS)}
+
+# Punktevergabe
+POINTS = {"Maus": 4, "Schnecke": 1, "Krabbe": 1,
+          "Doktorfisch": 1, "Falke": 9, "Käfer": 1, "Fuchs": 10,
+          "Kaninchen": 4, "Ziege": 20, "Singvogel": 3}
+
+# Mutationenstats
 GETFASTBONUS = 0.2
 FITNESSBOOSTBONUS = 0.2
 EVASIONBOOSTBONUS = 1
 PRECISIONBOOSTBONUS = 1
 INTBOOSTBONUS = 1
 INTBOOSTMULT = 2
+
 # Umwelkartenstats
 DEADDUDESMETEOR = 5
 HEATWAVEAMOUNT = 20
@@ -40,7 +52,7 @@ GROESSEBUTTONS = 300
 GROESSEBUTTONSGAME = 200
 GROESSEBUTTONSNEUERZUG = 200
 GROESSECARD = (200, 300)
-#Farben
+# Farben
 WEISS = (255, 255, 255)
 SCHWARZ = (0, 0, 0)
 FARBENSPIELER = [(0, 0, 255), (255, 0, 0),

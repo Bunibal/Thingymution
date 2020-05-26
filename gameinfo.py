@@ -1,5 +1,6 @@
 from gameclass import *
 from cards import *
+
 POINTS = {"Maus": 4, "Schnecke":1, "Krabbe": 1,
         "Doktorfisch": 1, "Falke": 9, "Käfer":1, "Fuchs": 10,
         "Kaninchen": 4, "Ziege": 20, "Singvogel": 3}

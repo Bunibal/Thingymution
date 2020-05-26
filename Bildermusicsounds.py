@@ -1,21 +1,35 @@
-import os
 from globalconstants import *
+import tkinter as tk
+import pygame
+import os
+import pytmx
 
-GROESSE = BREITE, HOEHE = 1536, 825
+
+root = tk.Tk()
+
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+
+GROESSE = BREITE, HOEHE = screen_width, screen_height
 TRANSPARENCY = (13, 66, 23)
 
 pygame.init()
+origPath = os.getcwd()
+os.chdir(origPath + "/resources")
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
 screen = pygame.display.set_mode(GROESSE)
 pygame.display.set_caption("Thingymution")
+
+# mapfiles
+mapFile0 = pytmx.TiledMap("maplvl1.tmx")
+mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
+MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60, 60))]
 
 # Schriftarten
 FONT1 = pygame.font.SysFont("chiller", 50)
 FONT2 = pygame.font.SysFont("Times", 30)
 
 # Bildgroessen
-origPath = os.getcwd()
-os.chdir(origPath + "/resources")
 BILDGROESSESCHNECKE = (16, 8)
 BILDGROESSEMAUS = (16, 16)
 BILDGROESSEKRABBE = (16, 8)
@@ -73,13 +87,13 @@ cardbug = pygame.transform.scale(pygame.image.load("cardbug.png").convert(), GRO
 carddoctorfish = pygame.transform.scale(pygame.image.load("carddoctorfish.png").convert(), GROESSECARD)
 cardcrab = pygame.transform.scale(pygame.image.load("cardcrab.png").convert(), GROESSECARD)
 cardeel = pygame.transform.scale(pygame.image.load("cardeel.png").convert(), GROESSECARD)
+
 # jetzt kommen die MUTATIONEN
 cardgetfast = pygame.transform.scale(pygame.image.load("cardgetfast.png").convert(), GROESSECARD)
 cardfitnessboost = pygame.transform.scale(pygame.image.load("cardfitnessboost.png").convert(), GROESSECARD)
 cardpowerboost = pygame.transform.scale(pygame.image.load("cardpowerboost.png").convert(), GROESSECARD)
 cardintboost = pygame.transform.scale(pygame.image.load("cardgetintelligent.png").convert(), GROESSECARD)
 cardgetflying = pygame.transform.scale(pygame.image.load("cardgetflying.png").convert(), GROESSECARD)
+
 # jetzt die Umweltkarten
 cardmeteorshower = pygame.transform.scale(pygame.image.load("cardmeteor.png").convert(), GROESSECARD)
-
-os.chdir(origPath)
