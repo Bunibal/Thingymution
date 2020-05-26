@@ -6,6 +6,10 @@ DOEVENT = 2
 MOUSETILE = 3
 KILLSERVER = 322
 
+NOTURN = 100
+TURN = 101
+ENDGAME = 102
+
 class Network:
     def __init__(self, serverIp):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

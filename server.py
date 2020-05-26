@@ -8,13 +8,6 @@ from gameinfo import *
 from network import *
 
 TIERCAP = 10000
-#Aktionen
-
-SPAWNTIER = 0
-GIVEMUTATION = 1
-DOEVENT = 2
-MOUSETILE = 3
-KILLSERVER = 322
 
 hostname = socket.gethostname()
 IPAddr = socket.gethostbyname(hostname)
@@ -35,6 +28,7 @@ game = Game(mapNr)
 activePlayers = []
 forcePausing = []
 doingTurn = []
+gameover = False
 over = False
 points = []
 
@@ -50,7 +44,7 @@ def threaded_simulation():
             if game.frames >= 20*GAMELENGTH:
                 print("Gameaus")
                 print(points)
-                over = True
+                gameover = True
             elif game.frames%(20 * SEKUNDENZUG) == 0:
                 forcePausing = playerCount * [True]
             if game.frames%(20 * SEKUNDENPUNKTE) == 0:
@@ -123,7 +117,9 @@ def msgToClient(player, tilemouse):
     if len(stateall) > TIERCAP:
         stateall = stateall[:TIERCAP]
         print("Warnung: Zu viele Tiere")
-    return [startturn, (points, playerCount), stateall, statetile]
+    if gameover:
+
+    return [action, (points, playerCount), stateall, statetile]
 
 playerCount = 0
 s.settimeout(10)

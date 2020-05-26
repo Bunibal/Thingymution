@@ -1,5 +1,12 @@
 from globalconstants import *
 from Bildermusicsounds import *
+# Kartenarten
+MUTATIONEN = 0
+UMWELT = 1
+LANDTIERE = 3
+WASSERTIERE = 4
+FLIEGER = 2
+
 class Karte:
     def __init__(self):
         self.image = defaultKarte
@@ -203,3 +210,9 @@ class Granade(Karte):
 
     def spielen(self, execlass, targets):
         execlass.doevent("Granade", targets)
+
+KARTEN_VORHANDEN = {MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
+                    UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
+                    LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
+                    WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}
+

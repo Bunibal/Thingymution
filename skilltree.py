@@ -1,11 +1,12 @@
 from Bildermusicsounds import *
 
-skilltreeslug = [(["neuerdreck", "bla", "bla", "blabla"], [(0,2), ...]) ["neuerdreck", "bla", "bla", "blabla"]]
+skilltreeslug = [(["neuerdreck", "bla", "bla", "blabla"], [(0,2), (),(),(1,)]),
+                 (["neuerdreck", "bla", "bla", "blabla"], [(),(),(),()])]
+POSTIER4 = HOEHE // 6
 POSTIER0 = POSTIER4 * 5
 POSTIER1 = POSTIER4 * 4
 POSTIER2 = POSTIER4 * 3
 POSTIER3 = POSTIER4 * 2
-POSTIER4 = HOEHE // 6
 POSTIER = [POSTIER0, POSTIER1, POSTIER2, POSTIER3, POSTIER4]
 
 
@@ -15,17 +16,18 @@ class Skilltree:
         self.animal = animal
         self.header = header
         self.treeinfo = treeinfo
-        self.tiers = len(mutations)
+        self.tiers = len(treeinfo)
         self.buttons = []
-        self.image = pygame.Surface(HOEHE, BREITE)
+        self.image = pygame.Surface(GROESSE)
         self.erstellen()
         self.createImage()
 
     def erstellen(self):
         for tierNR, tier in enumerate(self.treeinfo):
             buttonsInTier = []
-            for buttonind, mut in enumerate(tier):
-                pos = self.getplacement(tierNR, buttonindex)
+            mutationen = tier[0]
+            for buttoni, mut in enumerate(mutationen):
+                pos = self.getplacement(tierNR, buttoni)
                 buttonsInTier.append(Mutationbutton(mut, pos))
             self.buttons.append(buttonsInTier)
 
@@ -42,7 +44,7 @@ class Skilltree:
                 connsbutton = conns[index]
                 for con in connsbutton:
                     endButton = self.buttons[tierNR+1][con]
-                    pygame.draw.line(self.image, SCHWARZ, button.rect.center, endButton.rect.center)
+                    pygame.draw.line(self.image, WEISS, button.rect.center, endButton.rect.center)
         for tier in self.buttons:
             for button in tier:
                 button.blitButton(self.image)
