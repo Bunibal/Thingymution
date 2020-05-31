@@ -1,10 +1,7 @@
-import socket
-from _thread import *
-import sys
-import pickle
 from gameclass import *
+from _thread import *
 from pygame.time import Clock
-from gameinfo import *
+from gameelements import TIERE, EVENTS, POINTS
 from network import *
 
 TIERCAP = 10000
@@ -32,6 +29,7 @@ gameover = False
 over = False
 points = []
 
+
 def threaded_simulation():
     global forcePausing, over, points
     print("Simulation gestartet")
@@ -41,18 +39,19 @@ def threaded_simulation():
         uhr.tick(20)
         if not isBlocking():
             game.step()
-            if game.frames >= 20*GAMELENGTH:
+            if game.frames >= 20 * GAMELENGTH:
                 print("Gameaus")
                 print(points)
                 gameover = True
-            elif game.frames%(20 * SEKUNDENZUG) == 0:
+            elif game.frames % (20 * SEKUNDENZUG) == 0:
                 forcePausing = playerCount * [True]
-            if game.frames%(20 * SEKUNDENPUNKTE) == 0:
+            if game.frames % (20 * SEKUNDENPUNKTE) == 0:
                 pointsRN = game.getpoints(playerCount, POINTS)
                 for i in range(len(points)):
                     points[i] += pointsRN[i]
-        if game.frames%100 == 1:
+        if game.frames % 100 == 1:
             print("Game Laeuft, Kreaturen:", len(game.livingThings))
+
 
 def isBlocking():
     if True in [forcePausing[i] for i in activePlayers]:
@@ -65,9 +64,9 @@ def isBlocking():
 def threaded_client(conn, player):
     global forcePausing, over, doingTurn
     conn.send(pickle.dumps((player, mapNr)))
-    print("Player %i joined" %player)
+    print("Player %i joined" % player)
     reply = ""
-    tile = (0,0)
+    tile = (0, 0)
     while True:
         try:
             data = conn.recv(2048)
@@ -80,7 +79,6 @@ def threaded_client(conn, player):
             activePlayers.remove(player)
             break
         else:
-            ##print("Received:", msg)
             try:
                 msg = pickle.loads(data)
             except:
@@ -88,7 +86,7 @@ def threaded_client(conn, player):
                 print("Couldn't unpickle")
             amKartenSpielen = msg[0]
             doingTurn[player] = amKartenSpielen
-            for i in range(1,len(msg)):
+            for i in range(1, len(msg)):
                 if msg[i][0] == SPAWNTIER:
                     for j in range(msg[i][3]):
                         game.addCreature(TIERE[msg[i][1]], msg[i][2], player)
@@ -102,11 +100,10 @@ def threaded_client(conn, player):
                     over = True
         msgTo = msgToClient(player, tile)
         conn.sendall(pickle.dumps(msgTo))
-        ##except:
-        ##    break
 
     print("Lost connection")
     conn.close()
+
 
 def msgToClient(player, tilemouse):
     global forcePausing
@@ -118,8 +115,9 @@ def msgToClient(player, tilemouse):
         stateall = stateall[:TIERCAP]
         print("Warnung: Zu viele Tiere")
     if gameover:
+        pass
+    return [startturn, (points, playerCount), stateall, statetile]
 
-    return [action, (points, playerCount), stateall, statetile]
 
 playerCount = 0
 s.settimeout(10)
@@ -134,6 +132,7 @@ while True:
         print("Connected to:", addr)
         if playerCount == 0:
             start_new_thread(threaded_simulation, ())
+
         activePlayers.append(playerCount)
         doingTurn.append(False)
         forcePausing.append(True)

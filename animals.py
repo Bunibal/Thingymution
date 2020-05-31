@@ -1,5 +1,7 @@
-
+import random
+from helpfunctions import *
 from animalstats import *
+from gameconstants import *
 
 
 class Lebewesen:

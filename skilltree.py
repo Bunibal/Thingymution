@@ -1,7 +1,7 @@
 from Bildermusicsounds import *
 
-skilltreeslug = [(["neuerdreck", "bla", "bla", "blabla"], [(0,2), (),(),(1,)]),
-                 (["neuerdreck", "bla", "bla", "blabla"], [(),(),(),()])]
+skilltreeslug = [(["neuerdreck", "bla", "bla", "blabla"], [(0, 2), (), (), (1,)]),
+                 (["neuerdreck", "bla", "bla", "blabla"], [(), (), (), ()])]
 POSTIER4 = HOEHE // 6
 POSTIER0 = POSTIER4 * 5
 POSTIER1 = POSTIER4 * 4
@@ -11,7 +11,7 @@ POSTIER = [POSTIER0, POSTIER1, POSTIER2, POSTIER3, POSTIER4]
 
 
 class Skilltree:
-    def __init__(self, background, animal, treeinfo = skilltreeslug, header = None):
+    def __init__(self, background, animal, treeinfo=skilltreeslug, header=None):
         self.background = background
         self.animal = animal
         self.header = header
@@ -34,16 +34,16 @@ class Skilltree:
     def getplacement(self, tierindex, buttonindex):
         x = BREITE // (len(self.treeinfo[tierindex][0]) + 1) * (buttonindex + 1)
         y = POSTIER[tierindex]
-        return (x,y)
+        return (x, y)
 
     def createImage(self):
-        self.image.blit(self.background, (0,0))
+        self.image.blit(self.background, (0, 0))
         for tierNR, buttons in enumerate(self.buttons):
             conns = self.treeinfo[tierNR][1]
             for index, button in enumerate(buttons):
                 connsbutton = conns[index]
                 for con in connsbutton:
-                    endButton = self.buttons[tierNR+1][con]
+                    endButton = self.buttons[tierNR + 1][con]
                     pygame.draw.line(self.image, WEISS, button.rect.center, endButton.rect.center)
         for tier in self.buttons:
             for button in tier:
@@ -62,7 +62,7 @@ class Mutationbutton:
     def __init__(self, mutation, pos):
         self.font = pygame.font.SysFont("chiller", 50)
         self.mutation = mutation
-        self.rect = pygame.rect.Rect(pos, (100,100))
+        self.rect = pygame.rect.Rect(pos, (100, 100))
         self.text = self.font.render(self.mutation, 1, SCHWARZ)
         self.pos = pos
 

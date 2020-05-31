@@ -1,9 +1,8 @@
-from globalconstants import *
+from graphicalconstants import *
 import tkinter as tk
 import pygame
 import os
 import pytmx
-
 
 root = tk.Tk()
 
@@ -25,21 +24,6 @@ mapFile0 = pytmx.TiledMap("maplvl1.tmx")
 mapFileKleiner = pytmx.TiledMap("maplvl2.tmx")
 MAPFILES = [(mapFile0, (200, 200)), (mapFileKleiner, (60, 60))]
 
-# Schriftarten
-FONT1 = pygame.font.SysFont("chiller", 50)
-FONT2 = pygame.font.SysFont("Times", 30)
-
-# Bildgroessen
-BILDGROESSESCHNECKE = (16, 8)
-BILDGROESSEMAUS = (16, 16)
-BILDGROESSEKRABBE = (16, 8)
-BILDGROESSEFALKE = (16, 16)
-BILDGROESSEKAEFER = (16, 8)
-BILDGROESSEDOKTORFISCH = (16, 8)
-BILDGROESSEFUCHS = (16, 16)
-BILDGROESSEKANINCHEN = (14, 14)
-BILDGROESSEZIEGE = (20, 20)
-BILDGROESSESINGVOGEL = (16, 16)
 # music and backgrounds
 
 menubackground = pygame.image.load("menubackground.png").convert()
@@ -49,9 +33,8 @@ music = ["1 Great pyramids.mp3", "2 Face to face.mp3", "3 Life in forest.mp3", "
          "2.mp3", "4.mp3", "6.mp3", "8.mp3", "11.mp3", "13.mp3", "15.mp3", "18.mp3"]
 
 # Hier laden wir ma alle Bilder rein
-mapPicture0 = pygame.image.load("maplvl1.png").convert()
-kleinereMap = pygame.image.load("maplvl2.png").convert()
-MAPPICTURES = [mapPicture0, kleinereMap]
+MAPPICTURES = [pygame.image.load("maplvl1.png").convert(), pygame.image.load("maplvl2.png").convert()]
+
 schneckeImage = pygame.image.load("slug.png").convert_alpha()
 mausImage = pygame.image.load("mouse.png").convert_alpha()
 krabbeImage = pygame.image.load("crab.png")
@@ -72,6 +55,20 @@ singvogelFliegendImage = pygame.image.load("singvogelflying.png").convert_alpha(
 buttons1 = pygame.transform.scale(pygame.image.load("buttons1.png").convert(),
                                   (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
 bar = pygame.transform.scale(pygame.image.load("bar.png").convert(), (BREITE // 6, HOEHE))
+
+# images to description
+IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
+          "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
+          "Krabbe": (krabbeImage, None, BILDGROESSEKRABBE),
+          "Doktorfisch": (doktorfischimage, None, BILDGROESSEDOKTORFISCH),
+          "Falke": (falkeImage, None, BILDGROESSEFALKE),
+          "FalkeFLG": (falkeFliegendImage, None, BILDGROESSEFALKE),
+          "Singvogel": (singvogelImage, None, BILDGROESSESINGVOGEL),
+          "SingvogelFLG": (singvogelFliegendImage, None, BILDGROESSESINGVOGEL),
+          "Käfer": (kaeferImage, None, BILDGROESSEKAEFER),
+          "Fuchs": (fuchsImage, None, BILDGROESSEFUCHS),
+          "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
+          "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
 
 # hier GUI
 buttonzug = pygame.transform.scale(pygame.image.load("zugbutton.png").convert(),

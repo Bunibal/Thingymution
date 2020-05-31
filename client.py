@@ -1,48 +1,18 @@
-from gameinfo import *
+#letzte Änderung:14.04.2020
+#Sebastian Bittner, Stephan Buchner
+
+import sys
+from gameelements import *
 from network import *
 from widgets import *
 from skilltree import *
 from cards import *
 
-
 # Zum laufen:py Pythonstuff\ThingyMutation\server.py
-# Konstanten
-FPSMENU = 60
 
 BARBREITE = int(BREITE - BREITE / 6)
 
 SONG_END = pygame.USEREVENT + 1
-
-ZOOM = 0.9
-
-BUTTONS = ["Singleplayer", "Multiplayer", "Options", "Exit Game"]
-LVLS = ["Tutorial", "Sandbox", "Level 1", "Level 2", "Menu"]
-
-# Bildgroessen
-BILDGROESSESCHNECKE = (16, 8)
-BILDGROESSEMAUS = (16, 16)
-BILDGROESSEKRABBE = (16, 8)
-BILDGROESSEFALKE = (16, 16)
-BILDGROESSEKAEFER = (16, 8)
-BILDGROESSEDOKTORFISCH = (16, 8)
-BILDGROESSEFUCHS = (16, 16)
-BILDGROESSEKANINCHEN = (14, 14)
-BILDGROESSEZIEGE = (20, 20)
-BILDGROESSESINGVOGEL = (16, 16)
-
-#### images to description
-IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
-          "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
-          "Krabbe": (krabbeImage, None, BILDGROESSEKRABBE),
-          "Doktorfisch": (doktorfischimage, None, BILDGROESSEDOKTORFISCH),
-          "Falke": (falkeImage, None, BILDGROESSEFALKE),
-          "FalkeFLG": (falkeFliegendImage, None, BILDGROESSEFALKE),
-          "Singvogel": (singvogelImage, None, BILDGROESSESINGVOGEL),
-          "SingvogelFLG": (singvogelFliegendImage, None, BILDGROESSESINGVOGEL),
-          "Käfer": (kaeferImage, None, BILDGROESSEKAEFER),
-          "Fuchs": (fuchsImage, None, BILDGROESSEFUCHS),
-          "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
-          "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
 
 
 def handkarten(stonetype):
@@ -587,7 +557,7 @@ class Execute:
         else:
             self.statusMultiPlayer()
         if self.inskilltree:
-            self.testsktr.blitSkilltree(self.screen, (0,0))
+            self.testsktr.blitSkilltree(self.screen, (0, 0))
         pygame.display.flip()
 
     def standardHandling(self, event):
@@ -674,9 +644,6 @@ class Execute:
 
     def statusSinglePlayer(self):
         a = 0
-        ##text = self.font2.render("Spieler %i: %i"%(p,self.points[p])
-        ##                    ,1,FARBENSPIELER[p])
-        ##self.screen.blit(text, [BREITE - BREITE//6 + 50, HOEHE//2+a])
         a += 30
         tileRN = getTile(self.getMapPos(self.mauspos))
         if 0 <= tileRN[0] < self.tilenbrx and 0 <= tileRN[1] < self.tilenbry:
@@ -689,9 +656,11 @@ class Execute:
         i = 50
         for tier in self.gameInfo:
             if tier.tile == tileRN:
-                text = self.font2.render("%s, %i, %.1f, %.3f, %s" % (self.getDesc(tier), self.getAnzahl(tier),
-                                                                     self.getHunger(tier), self.getFitness(tier),
-                                                                     ", ".join(self.getMutations(tier))), 1, (20, 0, 0))
+                desc = self.getDesc(tier)
+                text = self.font2.render(f"{desc}, %i, %.1f, %.3f, %s" % (self.getAnzahl(tier),
+                                                                          self.getHunger(tier), self.getFitness(tier),
+                                                                          ", ".join(self.getMutations(tier))), 1,
+                                         (20, 0, 0))
                 self.screen.blit(text, [100 + 300 * int(self.zeigeStats), 40 + i])
         i += 50
         if self.zeigeStats:

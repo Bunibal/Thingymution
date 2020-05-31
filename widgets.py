@@ -1,5 +1,7 @@
 from Bildermusicsounds import *
-#Widget-Klassen
+
+
+# Widget-Klassen
 class ButtonNormal:
     def __init__(self, pos, label):
         self.font = FONT1
@@ -31,7 +33,7 @@ class TextFeld:
         self.font = font
         self.text = initText
         self.rendered = font.render(self.text, 1, WEISS)
-        self.laenge = 400
+        self.laenge = laenge
 
     def blitTextFeld(self, screen):
         pygame.draw.rect(screen, SCHWARZ,
@@ -44,4 +46,3 @@ class TextFeld:
         else:
             self.text = self.text + event.unicode
         self.rendered = self.font.render(self.text, 1, WEISS)
-
