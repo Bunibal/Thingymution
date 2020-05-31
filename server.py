@@ -31,7 +31,7 @@ points = []
 
 
 def threaded_simulation():
-    global forcePausing, over, points
+    global forcePausing, over, points, gameover
     print("Simulation gestartet")
     uhr = Clock()
     gameLaeuft = True
@@ -115,9 +115,12 @@ def msgToClient(player, tilemouse):
         stateall = stateall[:TIERCAP]
         print("Warnung: Zu viele Tiere")
     if gameover:
-        pass
-    return [startturn, (points, playerCount), stateall, statetile]
-
+        action = GAMEOVER
+    elif startturn:
+        action = TURN
+    else:
+        action = NOTURN
+    return [action, (points, playerCount), stateall, statetile]
 
 playerCount = 0
 s.settimeout(10)

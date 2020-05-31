@@ -249,14 +249,3 @@ if __name__ == "__main__":
     createAndMonitor(Schnecke, (200, 1200), ["MUTGETFAST"], steps=5000)
     game = Game()
     createAndMonitor(Schnecke, (200, 1200), ["MUTFITNESSBOOST"], steps=5000)
-##    anzM = input("Wieviele Mäuse?")
-##    for i in range(int(anzM)):
-##        game.addCreature(Maus, (random.randint(0,1000), 1500))
-##    while True:
-##        schritte = input("Schritte:")
-##        try:
-##            for i in range(int(schritte)):
-##                game.step()
-##        except:
-##            break
-##        print("Kreaturen:", len(game.livingThings))
