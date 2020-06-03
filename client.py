@@ -609,7 +609,7 @@ class Execute:
         for tier in self.objectInfoInTile:
             text = self.font2.render("%s, %i, %.1f, %.3f, %s" % (self.getDesc(tier), self.getAnzahl(tier),
                                                                  self.getHunger(tier), self.getFitness(tier),
-                                                                 ", ".join(self.getMutations(tier))), 1, (20, 0, 0))
+                                                                 self.getMutations(tier)), 1, (20, 0, 0))
             self.screen.blit(text, [100 + 300 * int(self.zeigeStats), 40 + i])
             i += 50
         if self.zeigeStats:

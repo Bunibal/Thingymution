@@ -1,5 +1,5 @@
 from Bildermusicsounds import *
-
+from mutations import *
 
 class Karte:
     def __init__(self):
@@ -85,7 +85,7 @@ class Getfast(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTGETFAST")
+            game.mutations_list.append(getFast)
 
 
 class Fitnessboost(Karte):
@@ -96,7 +96,7 @@ class Fitnessboost(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTFITNESSBOOST")
+            game.mutations_list.append(getFitness)
 
 
 class Powerboost(Karte):
@@ -107,7 +107,7 @@ class Powerboost(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTPOWERBOOST")
+            game.mutations_list.append(getPower) # Existiert noch nicht
 
 
 class IntBoost(Karte):
@@ -118,7 +118,7 @@ class IntBoost(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTINTBOOST")
+            game.mutations_list.append(getInt)
 
 
 class EvasionBoost(Karte):
@@ -129,7 +129,7 @@ class EvasionBoost(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTEVASIONBOOST")
+            game.mutations_list.append(getEvasion)
 
 
 class PrecisionBoost(Karte):
@@ -140,7 +140,7 @@ class PrecisionBoost(Karte):
 
     def spielen(self, game):
         for i in range(3):
-            game.mutations_list.append("MUTPRECISIONBOOST")
+            game.mutations_list.append(getPrecision)
 
 
 class Getflying(Karte):
@@ -150,7 +150,7 @@ class Getflying(Karte):
         self.desc = "fliegt"
 
     def spielen(self, game):
-        game.mutations_list.append("MUTGETFLYING")
+        game.mutations_list.append(getFlying)
 
 
 class EventKarte(Karte):

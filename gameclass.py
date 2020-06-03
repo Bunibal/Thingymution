@@ -172,7 +172,7 @@ class Game:
         target = self.getCreatureById(creatureId)
         if target == None:
             return False
-        target.mutationen.append(mutation)
+        target.mutate(mutation)
 
     # noch recht slow weil ich faul bin
     def getCreatureById(self, id):

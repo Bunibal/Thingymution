@@ -1,6 +1,5 @@
 from Bildermusicsounds import *
 
-
 # Widget-Klassen
 class ButtonNormal:
     def __init__(self, pos, label):

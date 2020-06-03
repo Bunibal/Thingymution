@@ -18,7 +18,7 @@ COASTGRASS = 15
 # terrainclasses
 TERRAIN = {"hexagonal1": (RIVER, FOREST, RIVERBANK, DIRT, GREENFIELD),
            "berge": (HIGHMOUNTAIN, SNOWYMOUNTAIN), "grass": (DESERT, HILLS, STEPPE),
-           "overworld": (FOREST1, LOWMOUNTAINS), "water": (OCEAN),
+           "overworld": (FOREST1, LOWMOUNTAINS), "water": (OCEAN, ),
            "watergrasssand": (COASTWATER, BEACH, COASTGRASS)}
 
 TEMP = {HIGHMOUNTAIN:3,SNOWYMOUNTAIN:-10,DESERT:40,HILLS:20

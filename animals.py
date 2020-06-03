@@ -2,7 +2,8 @@ import random
 from helpfunctions import *
 from animalstats import *
 from gameconstants import *
-
+from terrainstats import *
+from mutations import *
 
 class Lebewesen:
     desc = "basicLebewesen"
@@ -52,6 +53,13 @@ class Lebewesen:
         self.standardEvasion = 0
         self.standardPrecision = 0
         self.lastAttack = self.game.frames
+        # Erstelle Dict von mutierten stats
+        self.mutierteStats = {}
+        for stat in STATSZUMUTIEREN:
+            self.mutierteStats[stat] = 0
+        for mut in self.mutationen:
+            for stat in mut:
+                self.mutierteStats[stat] += mut[stat]
 
     def moveBy(self, x, y, force=False):
         tileVorher = self.tile
@@ -63,8 +71,7 @@ class Lebewesen:
         if self.posx == 0 or self.posy == 0 or self.posx == 16 * self.game.tilenbrx - 0.1 or self.posy == 16 * self.game.tilenbry - 0.1:
             self.angle += 180
         self.testForTerrain()
-        intbonustimes = self.mutationen.count("MUTINTBOOST")
-        self.intelligence = (self.standardInt + intbonustimes * INTBOOSTBONUS) * INTBOOSTMULT ** intbonustimes
+        self.intelligence = (self.standardInt + self.mutierteStats["INTFLAT"]) * (1 + self.mutierteStats["INTMULT"])
         if not force:
             if random.random() > np.power(2.0, -self.intelligence):
                 if self.terrain not in self.erlaubteTerrains or (SWIMIN[self.terrain] > self.swim and not self.imFlug):
@@ -83,7 +90,7 @@ class Lebewesen:
             self.game.tileMatrix[tileVorher[0]][tileVorher[1]]["Lebewesen"].remove(self)
 
     def move(self):
-        mutfaktor = 1 + GETFASTBONUS * self.mutationen.count("MUTGETFAST")
+        mutfaktor = 1 + self.mutierteStats["SPEED"]
         self.setSpeed(self.standardSpeed * self.speedMultEssen * self.speedMultTerrain * self.speedMultMisc * mutfaktor)
         self.moveBy(self.vx / FPSGAME, self.vy / FPSGAME)
 
@@ -109,9 +116,7 @@ class Lebewesen:
         self.reactToTerrain()
         self.move()
         self.randomteilen()
-        mutcounter = self.mutationen.count("MUTPOWERBOOST")
-        if "MUTPOWERBOOST" in self.mutationen:
-            self.staerke = (self.standardStaerke) * (mutcounter + 1) + mutcounter * 5
+        self.staerke = self.standardStaerke
 
     def pflanzenfressen(self):
         if self.pflanzenfresser and self.alive:
@@ -138,6 +143,11 @@ class Lebewesen:
             aenderung = einsMehr - int(random.random() < pEinesWeniger)
             self.hunger += self.hungerproframe + einsMehr / self.popGroesse
             self.changePop(aenderung)
+
+    def mutate(self, mutation):
+        self.mutationen.append(mutation)
+        for stat in mutation:
+            self.mutierteStats[stat] += mutation[stat]
 
     def testForTerrain(self):
         self.terrain = self.game.getTerrain((self.posx, self.posy))
@@ -198,7 +208,7 @@ class Lebewesen:
         return opfer
 
     def getFitness(self):
-        mutboost = (self.standardW - 1) * FITNESSBOOSTBONUS * self.mutationen.count("MUTFITNESSBOOST")
+        mutboost = (self.standardW - 1) * self.mutierteStats["FITNESS"]
         tmp = self.game.getTemp(self.terrain, self.tile)
         temperaturAnpassung = np.exp(-((tmp - self.optimalTemp) / self.tempRange) ** 2 / 2)
         w1 = (self.standardW + mutboost - (self.hunger / self.hungerResistenz) ** 3 * TODFAKTOR)
@@ -206,11 +216,11 @@ class Lebewesen:
         return w1 * np.power(temperaturAnpassung, TEMPANPASSKOEFF)
 
     def getEvasion(self):
-        mutbonus = self.mutationen.count("MUTEVASIONBOOST")
+        mutbonus = self.mutierteStats["EVASION"]
         return self.standardEvasion + mutbonus
 
     def getPrecision(self):
-        mutbonus = self.mutationen.count("MUTPRECISIONBOOST")
+        mutbonus = self.mutierteStats["PRECISION"]
         return self.standardPrecision + mutbonus
 
     def fliegen(self):

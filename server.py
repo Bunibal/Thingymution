@@ -4,6 +4,7 @@ from pygame.time import Clock
 from gameelements import TIERE, EVENTS, POINTS
 from network import *
 
+pygame.quit() # weil pygame gestartet wird
 TIERCAP = 10000
 
 hostname = socket.gethostname()
