@@ -176,6 +176,7 @@ class Execute:
         self.gameover = False
         self.inskilltree = False
         self.testsktr = Skilltree(pygame.Surface(GROESSE), "slug")
+        self.skilltreePoints = 4
         mausx, mauxy = self.mauspos = (0, 0)
         mapverschieben = False
         self.oikeymemory = [False, False]
@@ -204,7 +205,10 @@ class Execute:
                 self.interpretServerMsg(incMsg)
             else:
                 self.gameInfo = self.game.livingThings
-            self.animieren()
+            if not self.inskilltree:
+                self.animieren()
+            else:
+                self.animierenSkillTree()
 
             if self.oikeymemory[0] and self.zoomfaktor >= 0.5:
                 self.zoom(ZOOM)
@@ -260,9 +264,15 @@ class Execute:
                             if click:
                                 self.inskilltree = not self.inskilltree
                     if event.button == pygame.BUTTON_RIGHT:
-                        for creature in self.tiere:
-                            self.spawn(creature, self.getMapPos(self.mauspos), 10)
-                        self.tiere = []
+                        if self.inskilltree:
+                            if self.skilltreePoints > 0:
+                                mut = self.testsktr.unlock(self.mauspos)
+                                if mut != None:
+                                    self.skilltreePoints -= 1
+                        else:
+                            for creature in self.tiere:
+                                self.spawn(creature, self.getMapPos(self.mauspos), 10)
+                            self.tiere = []
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
@@ -528,7 +538,6 @@ class Execute:
         pass
 
     def animieren(self):
-
         self.screen.fill((150, 150, 0))
         mapblitpos = [0, 0]
         for i in (0, 1):
@@ -551,14 +560,20 @@ class Execute:
         self.screen.blit(bar, (BARBREITE, 0))
         if self.zeigeStats:
             self.screen.blit(bar, (0, 0))
-        for button in self.buttonsgame:
-            button.blitButton(self.screen)
         if self.singleplayer:
             self.statusSinglePlayer()
         else:
             self.statusMultiPlayer()
-        if self.inskilltree:
-            self.testsktr.blitSkilltree(self.screen, (0,0))
+        for button in self.buttonsgame:
+            button.blitButton(self.screen)
+        if self.gameover:
+            self.endgamescreen()
+        pygame.display.flip()
+
+    def animierenSkillTree(self):
+        self.testsktr.blitSkilltree(self.screen, (0, 0))
+        for button in self.buttonsgame:
+            button.blitButton(self.screen)
         if self.gameover:
             self.endgamescreen()
         pygame.display.flip()

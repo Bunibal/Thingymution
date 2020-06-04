@@ -19,11 +19,13 @@ class ButtonNormal:
 class ButtonGame(ButtonNormal):
     def __init__(self, pos, label):
         ButtonNormal.__init__(self, pos, label)
+        self.font = FONT2
+        self.text = self.font.render(self.label, 1, SCHWARZ)
         self.rect = pygame.rect.Rect(self.pos, (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
 
     def blitButton(self, screen):
         screen.blit(buttons1, self.rect)
-        screen.blit(self.text, (self.pos[0] + 20, self.pos[1] + 20))
+        screen.blit(self.text, (self.pos[0] + 20, self.pos[1]))
 
 
 class TextFeld:

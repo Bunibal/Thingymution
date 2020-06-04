@@ -239,7 +239,9 @@ if __name__ == "__main__":
             game.step()
 
 
-    game = Game()
+    game = Game(0)
+    for i in range(999):
+        game.addCreature(Schnecke, (200, 1200))
     createAndMonitor(Schnecke, (200, 1200),
                      ["MUTGETFAST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST"],
                      steps=5000)

@@ -58,8 +58,8 @@ class Lebewesen:
         for stat in STATSZUMUTIEREN:
             self.mutierteStats[stat] = 0
         for mut in self.mutationen:
-            for stat in mut:
-                self.mutierteStats[stat] += mut[stat]
+            for stat in mut["Stats"]:
+                self.mutierteStats[stat] += mut["Stats"][stat]
 
     def moveBy(self, x, y, force=False):
         tileVorher = self.tile
@@ -146,8 +146,8 @@ class Lebewesen:
 
     def mutate(self, mutation):
         self.mutationen.append(mutation)
-        for stat in mutation:
-            self.mutierteStats[stat] += mutation[stat]
+        for stat in mutation["Stats"]:
+            self.mutierteStats[stat] += mutation["Stats"][stat]
 
     def testForTerrain(self):
         self.terrain = self.game.getTerrain((self.posx, self.posy))
