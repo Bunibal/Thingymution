@@ -81,6 +81,7 @@ class Spawngoat(SpawnTier):
 
 class Getfast(Karte):
     def __init__(self):
+        super().__init__()
         self.image = cardgetfast
         self.type = "Mutation"
         self.desc = "Geschwindigkeitsboost"
@@ -92,6 +93,7 @@ class Getfast(Karte):
 
 class Fitnessboost(Karte):
     def __init__(self):
+        super().__init__()
         self.image = cardfitnessboost
         self.type = "Mutation"
         self.desc = "Fitnessboost"
@@ -103,6 +105,7 @@ class Fitnessboost(Karte):
 
 class Powerboost(Karte):
     def __init__(self):
+        super().__init__()
         self.image = cardpowerboost
         self.type = "Mutation"
         self.desc = "Powerboost"
@@ -114,6 +117,7 @@ class Powerboost(Karte):
 
 class IntBoost(Karte):
     def __init__(self):
+        super().__init__()
         self.image = cardintboost
         self.type = "Mutation"
         self.desc = "Intelligenzboost"
@@ -125,6 +129,7 @@ class IntBoost(Karte):
 
 class EvasionBoost(Karte):
     def __init__(self):
+        super().__init__()
         self.image = carddefault
         self.type = "Mutation"
         self.desc = "Evasionboost"
@@ -136,6 +141,7 @@ class EvasionBoost(Karte):
 
 class PrecisionBoost(Karte):
     def __init__(self):
+        super().__init__()
         self.image = carddefault
         self.type = "Mutation"
         self.desc = "Precisionboost"
@@ -147,6 +153,7 @@ class PrecisionBoost(Karte):
 
 class Getflying(Karte):
     def __init__(self):
+        super().__init__()
         self.image = cardgetflying
         self.type = "Mutation"
         self.desc = "fliegt"
@@ -156,6 +163,7 @@ class Getflying(Karte):
 
 class Mutate(Karte):
     def __init__(self):
+        super(Mutate, self).__init__()
         self.image = carddefault
         self.type = "Umwelt"
         self.desc = "Granate"
@@ -169,6 +177,7 @@ class EventKarte(Karte):
 
 class Meteorshower(Karte):
     def __init__(self):
+        super(Meteorshower, self).__init__()
         self.image = cardmeteorshower
         self.type = "Umwelt"
         self.desc = "Meteorschauer"

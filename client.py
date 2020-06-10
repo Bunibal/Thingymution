@@ -203,6 +203,9 @@ class Execute:
                 self.msg = [False]
                 self.interpretServerMsg(incMsg)
             else:
+                if self.game.frames%(FPSGAME * SEKUNDENZUG) == 0:
+                    self.neuerZug()
+                self.game.step()
                 self.gameInfo = self.game.livingThings
             if not self.inskilltree:
                 self.animieren()
@@ -345,7 +348,6 @@ class Execute:
                 self.msg = [True]
                 self.interpretServerMsg(incMsg)
             else:
-                self.game.step()
                 self.gameInfo = self.game.livingThings
             self.screen.fill((150, 150, 0))
             mapblitpos = [0, 0]
@@ -680,11 +682,12 @@ class Execute:
         i = 50
         for tier in self.gameInfo:
             if tier.tile == tileRN:
+                muts = [mut["Name"] for mut in self.getMutations(tier)]
                 text = self.font2.render("%s, %i, %.1f, %.3f, %s" % (self.getDesc(tier), self.getAnzahl(tier),
                                                                      self.getHunger(tier), self.getFitness(tier),
-                                                                     ", ".join(self.getMutations(tier))), 1, (20, 0, 0))
+                                                                     muts), 1, (20, 0, 0))
                 self.screen.blit(text, [100 + 300 * int(self.zeigeStats), 40 + i])
-        i += 50
+                i += 50
         if self.zeigeStats:
             self.anzeige = {"Herden:": (len(self.gameInfo)),
                             "Tiere:": self.gesTiere}
@@ -712,7 +715,7 @@ class Execute:
                 if anz > 0:
                     zahl = playerAnimals[tierNR]
                     text = self.font2.render(moeglicheTiere[tierNR] + ": %i" % zahl,
-                                             1, FARBENSPIELER[player])
+                                             1, (0,0,255))
                     self.screen.blit(text, [30, a])
                     a += 30
 
@@ -800,12 +803,21 @@ class Execute:
 
     # Befehle an Server
     def spawn(self, tierDesc, pos, anzahl=1):
-        self.msg.append((SPAWNTIER, tierDesc, pos, anzahl))
+        if self.singleplayer:
+            for i in range(anzahl):
+                self.game.addCreature(TIERE[tierDesc], pos)
+        else:
+            self.msg.append((SPAWNTIER, tierDesc, pos, anzahl))
 
     def addMutation(self, tierId, mutation):
-        self.msg.append((GIVEMUTATION, tierId, mutation))
+        if self.singleplayer:
+            self.game.giveMutation(tierId, mutation)
+        else:
+            self.msg.append((GIVEMUTATION, tierId, mutation))
 
     def doevent(self, event, targets=None):
+        if self.singleplayer:
+            EVENTS[event](self.game, targets)
         self.msg.append((DOEVENT, event, targets))
 
     def killserver(self):
