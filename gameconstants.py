@@ -38,12 +38,14 @@ COOLWAVEAMOUNT = 20
 COOLWAVEDURATION = 60
 
 # Konstanten für Kommunikation
+# Client to server
 SPAWNTIER = 0
 GIVEMUTATION = 1
 DOEVENT = 2
 MOUSETILE = 3
+ADVANCE = 4
 KILLSERVER = 322
-
+#Server to client
 NOTURN = 100
 TURN = 101
 GAMEOVER = 102

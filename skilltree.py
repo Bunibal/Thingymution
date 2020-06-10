@@ -60,6 +60,15 @@ class Skilltree:
         index = self.treeinfo[button.tier][button.indexInTier]["Parent"]
         return self.buttons[button.tier - 1][index]
 
+    def findChildren(self, button):
+        if button.tier == self.tiers - 1:
+            return []
+        children = []
+        for index, button2 in enumerate(self.buttons[button.tier + 1]):
+            if self.treeinfo[button.tier + 1][index]["Parent"] == button.indexInTier:
+                children.append(button2)
+        return children
+
     def unlock(self, pos):
         button = self.clicked(pos)
         if button == None:
@@ -69,7 +78,6 @@ class Skilltree:
             button.blitButton(self.image)
             return button.mutation
         return None
-
 
     def clicked(self, pos):
         for tier in self.buttons:
@@ -100,3 +108,11 @@ class Mutationbutton:
 
     def unlock(self):
         self.unlocked = True
+
+    def __str__(self):
+        return f"Button mit Index {self.tier}, {self.indexInTier} und Mutation {self.mutation['Name']}"
+
+if __name__ == "__main__":
+    s = Skilltree(pygame.surface.Surface((1, 1)), "Schnecke")
+    print(s.findChildren(s.buttons[0][1])[1])
+    pygame.quit()

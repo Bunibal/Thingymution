@@ -220,7 +220,6 @@ class Granade(Karte):
 
     def spielen(self, execlass, targets):
         execlass.doevent("Granade", targets)
-        
 
 
     def spielen(self, execlass, targets):

@@ -333,7 +333,6 @@ class Kaefer(Lebewesen):
 
 class Maus(Lebewesen):
     desc = "Maus"
-
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 5

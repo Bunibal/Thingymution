@@ -12,5 +12,5 @@ STATSZUMUTIEREN = ["SPEED", "FITNESS", "EVASION", "PRECISION", "INTFLAT", "INTMU
 getFast = {"Name": "getFast", "Stats": {"SPEED": GETFASTBONUS}}
 getFitness = {"Name": "getFitness", "Stats": {"FITNESS": FITNESSBOOSTBONUS}}
 getEvasion = {"Name": "getEvasion", "Stats": {"EVASION": EVASIONBOOSTBONUS}}
-getPrecision = {"Name": "getFitness", "Stats": {"PRECISION": PRECISIONBOOSTBONUS}}
-getInt = {"Name": "getFitness", "Stats": {"INTFLAT": INTBOOSTBONUS, "INTMULT": INTBOOSTMULT}}
+getPrecision = {"Name": "getPrecision", "Stats": {"PRECISION": PRECISIONBOOSTBONUS}}
+getInt = {"Name": "getIntelligence", "Stats": {"INTFLAT": INTBOOSTBONUS, "INTMULT": INTBOOSTMULT}}
