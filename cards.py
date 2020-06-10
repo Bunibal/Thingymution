@@ -4,10 +4,12 @@ from mutations import *
 class Karte:
     def __init__(self):
         self.image = carddefault
+        self.showAOE = False
 
 
 class SpawnTier(Karte):
     def __init__(self, art, image, typ, anzahl=1):
+        super().__init__()
         self.image = image
         self.type = typ
         self.art = art
@@ -152,6 +154,13 @@ class Getflying(Karte):
     def spielen(self, game):
         game.mutations_list.append(getFlying)
 
+class Mutate(Karte):
+    def __init__(self):
+        self.image = carddefault
+        self.type = "Umwelt"
+        self.desc = "Granate"
+        self.targeting = "TILE"
+        self.targetNbr = 1
 
 class EventKarte(Karte):
     def __init__(self):
@@ -167,7 +176,6 @@ class Meteorshower(Karte):
 
     def spielen(self, execlass):
         execlass.doevent("Meteor")
-
 
 class Heatwave(Karte):
     def __init__(self):
@@ -198,6 +206,13 @@ class Granade(Karte):
         self.desc = "Granate"
         self.targeting = "TILE"
         self.targetNbr = 1
+        self.showAOE = True
+        self.aoe = (4,4)
+
+    def spielen(self, execlass, targets):
+        execlass.doevent("Granade", targets)
+        
+
 
     def spielen(self, execlass, targets):
         execlass.doevent("Granade", targets)

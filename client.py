@@ -8,7 +8,6 @@ from widgets import *
 from skilltree import *
 from cards import *
 
-# Zum laufen:py Pythonstuff\ThingyMutation\server.py
 
 BARBREITE = int(BREITE - BREITE / 6)
 
@@ -400,6 +399,13 @@ class Execute:
                 self.screen.blit(buttons1, nextCardButton)
                 self.screen.blit(nextCardLabel,
                                  (nextCardButton.left + 20, nextCardButton.top))
+                # AOE indicator
+                if aktiveKarte.showAOE:
+                    position = self.getScreenPos(tileCoords(self.getMouseTile()))
+                    size = mult(aktiveKarte.aoe, 16*self.zoomfaktor, True)
+                    pygame.draw.rect(self.screen, (0,0,255),
+                                     (position, size), 5)
+
             if self.oikeymemory[0] and self.zoomfaktor >= 0.5:
                 self.zoom(ZOOM, False)
             if self.oikeymemory[1] and self.zoomfaktor <= 4:
@@ -805,5 +811,5 @@ class Execute:
     def killserver(self):
         self.msg.append((KILLSERVER,))
 
-
-Execute(IMAGES)
+if __name__ == "__main__":
+    Execute(IMAGES)

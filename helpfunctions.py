@@ -44,6 +44,8 @@ def calcAngle(pos):
 def getTile(pos):
     return mult(pos, 1 / 16, True)
 
+def tileCoords(tile):
+    return mult(tile, 16, True)
 
 def zuschneiden_image(image, rectInfo, scale=1):
     rect = pygame.rect.Rect(rectInfo)
