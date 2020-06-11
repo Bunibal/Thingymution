@@ -7,7 +7,6 @@ from mutations import *
 
 class Lebewesen:
     desc = "basicLebewesen"
-
     def __init__(self, game, startpos=(400, 400), startangle=None, info=None):
         self.game = game
         self.posx, self.posy = startpos
@@ -60,6 +59,7 @@ class Lebewesen:
         for mut in self.mutationen:
             for stat in mut["Stats"]:
                 self.mutierteStats[stat] += mut["Stats"][stat]
+        self.skilltreepos = (-1,0)
 
     def moveBy(self, x, y, force=False):
         tileVorher = self.tile
@@ -144,10 +144,11 @@ class Lebewesen:
             self.hunger += self.hungerproframe + einsMehr / self.popGroesse
             self.changePop(aenderung)
 
-    def mutate(self, mutation):
+    def addMutation(self, mutation):
         self.mutationen.append(mutation)
         for stat in mutation["Stats"]:
             self.mutierteStats[stat] += mutation["Stats"][stat]
+
 
     def testForTerrain(self):
         self.terrain = self.game.getTerrain((self.posx, self.posy))

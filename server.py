@@ -97,6 +97,8 @@ def threaded_client(conn, player):
                     EVENTS[msg[i][1]](game, msg[i][2])
                 elif msg[i][0] == MOUSETILE:
                     tile = msg[i][1]
+                elif msg[i][0] == ADVANCE:
+                    game.mutate(msg[i][1])
                 elif msg[i][0] == KILLSERVER:
                     over = True
         msgTo = msgToClient(player, tile)

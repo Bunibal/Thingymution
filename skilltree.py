@@ -1,5 +1,6 @@
 from Bildermusicsounds import *
 from mutations import *
+import random
 
 skilltreeslug = [[{"Mutation": getFitness}, {"Mutation": getEvasion}],
                  [{"Mutation": getFast, "Parent": 1}, {"Mutation": getInt, "Parent": 1}]]
@@ -10,6 +11,20 @@ POSTIER2 = POSTIER4 * 3
 POSTIER3 = POSTIER4 * 2
 POSTIER = [POSTIER0, POSTIER1, POSTIER2, POSTIER3, POSTIER4]
 
+def newMutationAndPos(skilltree, pos):
+    tier, indexInTier = pos
+    if tier == -1:
+        possible = skilltree[0]
+    else:
+        if tier == len(skilltree) - 1:
+            print("Hoechstes Tier erreicht")
+            return None
+        possible = [mut for mut in skilltree[tier+1] if mut["Parent"] == indexInTier]
+        if possible == []:
+            print("Keine Möglichkeiten")
+            return None
+    newMut = random.choice(possible)
+    return newMut["Mutation"], ((tier+1), skilltree[tier+1].index(newMut))
 
 class Skilltree:
     def __init__(self, background, animal, treeinfo=skilltreeslug, header=None):
@@ -53,6 +68,9 @@ class Skilltree:
 
     def blitSkilltree(self, surface, pos):
         surface.blit(self.image, pos)
+
+    def getButtonByPosition(self, pos):
+        return self.buttons[pos[0]][pos[1]]
 
     def findParent(self, button):
         if button.tier == 0:
@@ -112,6 +130,7 @@ class Mutationbutton:
     def __str__(self):
         return f"Button mit Index {self.tier}, {self.indexInTier} und Mutation {self.mutation['Name']}"
 
+testSkilltree = Skilltree
 if __name__ == "__main__":
     s = Skilltree(pygame.surface.Surface((1, 1)), "Schnecke")
     print(s.findChildren(s.buttons[0][1])[1])

@@ -15,7 +15,8 @@ TIERE = {"Maus": Maus, "Schnecke": Schnecke, "Krabbe": Krabbe,
 EVENTS = {"Meteor": Game.meteorShower, "Coolwave": Game.coolWave,
           "Heatwave": Game.heatWave, "Granade": Game.granade}
 ZUGBUTTONS = ["Mutationen", "Umwelt", "Flieger", "Landtiere", "Wassertiere"]
-KARTEN_VORHANDEN = {MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
+KARTEN_VORHANDEN = {#MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, PrecisionBoost, IntBoost],
+                    MUTATIONEN: [Mutate],
                     UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
                     LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
                     WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}

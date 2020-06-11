@@ -165,10 +165,9 @@ class Mutate(Karte):
     def __init__(self):
         super(Mutate, self).__init__()
         self.image = carddefault
-        self.type = "Umwelt"
-        self.desc = "Granate"
-        self.targeting = "TILE"
-        self.targetNbr = 1
+        self.type = "Mutiere"
+        self.desc = "Mutiere"
+        self.targetNbr = 3
 
 class EventKarte(Karte):
     def __init__(self):

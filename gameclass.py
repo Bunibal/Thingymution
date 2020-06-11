@@ -2,6 +2,7 @@ from animals import *
 from gameconstants import *
 from terrainstats import *
 from Bildermusicsounds import MAPFILES
+from skilltree import *
 
 
 def getTileTerrainAndSet(map, pos, layer=3, schonGefunden=[-1, -1, -1, -1]):
@@ -172,9 +173,20 @@ class Game:
         target = self.getCreatureById(creatureId)
         if target == None:
             return False
-        target.mutate(mutation)
+        target.addMutation(mutation)
+
+    def mutate(self, creatureId):
+        creature = self.getCreatureById(creatureId)
+        indizes = creature.skilltreepos
+        new = newMutationAndPos(skilltreeslug, indizes)
+        if new == None:
+            return
+        newMutation, newIndizes = new
+        creature.addMutation(newMutation)
+        creature.skilltreepos = newIndizes
 
     # noch recht slow weil ich faul bin
+
     def getCreatureById(self, id):
         for c in self.livingThings:
             if c.id == id:

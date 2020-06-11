@@ -338,8 +338,8 @@ class Execute:
                                            self.zoomfaktor)
         mapverschieben = False
         zugstart = True
-        cardpick = False
-        kartenspielen = False
+        self.cardpick = False
+        self.kartenspielen = False
         self.zugpause = True
         while self.zugpause:
             self.uhr.tick(FPSGAME)
@@ -391,13 +391,13 @@ class Execute:
                 text = self.bigfont.render("%i X " % self.steineOnTable, 1, SCHWARZ)
                 self.screen.blit(text, (BREITE // 2 - 100, HOEHE * 3 // 4 - 60))
 
-            if cardpick:
+            if self.cardpick:
                 for karte in karten:
                     self.screen.blit(karte.image, karte.rect)
                     text = self.font2.render(karte.desc, 1, (0, 0, 0))
                     self.screen.blit(text, karte.rect.bottomleft)
 
-            if kartenspielen:
+            if self.kartenspielen:
                 self.screen.blit(buttons1, nextCardButton)
                 self.screen.blit(nextCardLabel,
                                  (nextCardButton.left + 20, nextCardButton.top))
@@ -448,7 +448,7 @@ class Execute:
                                         self.steineOnTable -= 1
                                         self.stonetype[self.buttonszug.index(it)] += 1
                                         if self.steineOnTable == 0:
-                                            cardpick = True
+                                            self.cardpick = True
                                             zugstart = False
                                             karten = handkarten(self.stonetype)
                                             i = 0
@@ -463,7 +463,7 @@ class Execute:
                                                             (BREITE // 8 + BREITE // 4 * (i - 3), HOEHE // 2 + 50),
                                                             GROESSECARD)
                                                 i += 1
-                        if cardpick:
+                        if self.cardpick:
                             for karte in karten:
                                 if karte.rect.collidepoint(self.mauspos):
                                     if karte.type == "Landtier" or karte.type == "Wassertier" or karte.type == "Flieger":
@@ -474,40 +474,30 @@ class Execute:
                                         self.mutierteTiere = []
                                         karte.spielen(self)
                                     karten.remove(karte)
-                                    cardpick = False
-                                    kartenspielen = True
+                                    self.cardpick = False
+                                    self.kartenspielen = True
                                     self.kartenGespielt += 1
                                     aktiveKarte = karte
                                     if karte.type == "Umwelt":
                                         self.eventKarteSpielen(karte)
                                         if karte.targeting == "NONE":
-                                            kartenspielen = False
-                                            if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
-                                                self.zugpause = False
-                                            else:
-                                                cardpick = True
+                                            self.nextcard()
                                         elif karte.targeting == "TILE":
                                             self.targets = []
+                                    elif karte.type == "Mutiere":
+                                        self.mutated = 0
 
-                        if kartenspielen:
+                        if self.kartenspielen:
                             if nextCardButton.collidepoint(self.mauspos):
-                                kartenspielen = False
-                                if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
-                                    self.zugpause = False
-                                else:
-                                    cardpick = True
+                                self.nextcard()
 
                     if event.button == pygame.BUTTON_RIGHT:
-                        if kartenspielen:
+                        if self.kartenspielen:
                             if aktiveKarte.type == "Landtier" or aktiveKarte.type == "Wassertier" or aktiveKarte.type == "Flieger":
                                 creature = self.tiere.pop(0)
                                 self.spawn(creature, self.getMapPos(self.mauspos))
                                 if len(self.tiere) == 0:
-                                    kartenspielen = False
-                                    if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
-                                        self.zugpause = False
-                                    else:
-                                        cardpick = True
+                                    self.nextcard()
                             elif aktiveKarte.type == "Mutation":
                                 if (self.objectOnMouse != None and
                                         self.getId(self.objectOnMouse) not in self.mutierteTiere):
@@ -516,21 +506,19 @@ class Execute:
                                     self.addMutation(id, mut)
                                     self.mutierteTiere.append(id)
                                     if len(self.mutations_list) == 0:
-                                        kartenspielen = False
-                                        if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
-                                            self.zugpause = False
-                                        else:
-                                            cardpick = True
+                                        self.nextcard()
                             elif aktiveKarte.type == "Umwelt":
                                 if aktiveKarte.targeting == "TILE":
                                     self.targets.append(self.getMouseTile())
                                     if len(self.targets) >= aktiveKarte.targetNbr:
                                         aktiveKarte.spielen(self, self.targets)
-                                        kartenspielen = False
-                                        if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
-                                            self.zugpause = False
-                                        else:
-                                            cardpick = True
+                                        self.nextcard()
+                            elif aktiveKarte.type == "Mutiere":
+                                if self.objectOnMouse != None:
+                                    self.mutate(self.getId(self.objectOnMouse))
+                                    self.mutated += 1
+                                    if self.mutated >= aktiveKarte.targetNbr:
+                                        self.nextcard()
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
                         mapverschieben = False
@@ -719,6 +707,13 @@ class Execute:
                     self.screen.blit(text, [30, a])
                     a += 30
 
+    def nextcard(self):
+        self.kartenspielen = False
+        if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
+            self.zugpause = False
+        else:
+            self.cardpick = True
+
     def endgamescreen(self):
         text = FONT2.render("Game over", 1, SCHWARZ)
         screen.blit(text, (400, 200))
@@ -819,6 +814,11 @@ class Execute:
         if self.singleplayer:
             EVENTS[event](self.game, targets)
         self.msg.append((DOEVENT, event, targets))
+
+    def mutate(self, animalId):
+        if self.singleplayer:
+            return
+        self.msg.append((ADVANCE, animalId))
 
     def killserver(self):
         self.msg.append((KILLSERVER,))
