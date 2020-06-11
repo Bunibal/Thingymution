@@ -1,5 +1,6 @@
 from Bildermusicsounds import *
 
+
 # Widget-Klassen
 class ButtonNormal:
     def __init__(self, pos, label):
@@ -47,3 +48,13 @@ class TextFeld:
         else:
             self.text = self.text + event.unicode
         self.rendered = self.font.render(self.text, 1, WEISS)
+
+
+class MessageToPlayer:
+    def __init__(self, text, kind):
+        self.image = MESSAGEIMAGES[kind]
+        self.pos = (BREITE // 5 * 2, HOEHE + 200)
+        self.rendered = FONT1.render(text, 1, SCHWARZ)
+
+    def blitmessage(self, window):
+        window.blit(self.rendered, self.pos)

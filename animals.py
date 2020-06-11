@@ -149,6 +149,7 @@ class Lebewesen:
         for stat in mutation["Stats"]:
             self.mutierteStats[stat] += mutation["Stats"][stat]
 
+
     def testForTerrain(self):
         self.terrain = self.game.getTerrain((self.posx, self.posy))
 

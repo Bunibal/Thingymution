@@ -1,15 +1,12 @@
-#letzte Änderung:14.04.2020
-#Sebastian Bittner, Stephan Buchner
+# letzte Änderung:14.04.2020
+# Sebastian Bittner, Stephan Buchner
 
 import sys
 from gameelements import *
 from network import *
 from widgets import *
-from skilltree import *
+from classskilltree import *
 from cards import *
-
-
-BARBREITE = int(BREITE - BREITE / 6)
 
 SONG_END = pygame.USEREVENT + 1
 
@@ -203,7 +200,7 @@ class Execute:
                 self.msg = [False]
                 self.interpretServerMsg(incMsg)
             else:
-                if self.game.frames%(FPSGAME * SEKUNDENZUG) == 0:
+                if self.game.frames % (FPSGAME * SEKUNDENZUG) == 0:
                     self.neuerZug()
                 self.game.step()
                 self.gameInfo = self.game.livingThings
@@ -238,9 +235,6 @@ class Execute:
 
                     if event.key == pygame.K_i:
                         self.oikeymemory[1] = True
-
-                    ##if event.key == pygame.K_z:
-                    ##    self.neuerZug()
 
                 elif event.type == pygame.MOUSEMOTION:
                     mausx, mausy = self.mauspos = event.pos
@@ -316,22 +310,21 @@ class Execute:
         self.steineOnTable = STEINEANZAHL
         self.kartenGespielt = 0
         self.objectOnMouse = None
+        self.messages = []
         i = 0
-        self.font2 = pygame.font.SysFont("Times", 30)
-        self.bigfont = pygame.font.SysFont("Times", 70)
         for label in self.button_listzug:
             button = pygame.sprite.Sprite()
             button.rect = pygame.rect.Rect(BREITE - BREITE // 10 + (-100 - 300 * i), HOEHE // 2 - 150,
                                            GROESSEBUTTONSNEUERZUG, GROESSEBUTTONSNEUERZUG)
             button.image = buttonzug
             self.buttonszug.append(button)
-            text = self.font2.render(label, 1, WEISS)
+            text = FONT2.render(label, 1, WEISS)
             self.txtzug.append(text)
             i += 1
         endTurnButton = pygame.rect.Rect(BARBREITE + 30, HOEHE - 100, GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5)
-        endTurnLabel = self.font2.render("Zug beenden", 1, SCHWARZ)
+        endTurnLabel = FONT2.render("Zug beenden", 1, SCHWARZ)
         nextCardButton = pygame.rect.Rect(BARBREITE + 30, HOEHE - 150, GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5)
-        nextCardLabel = self.font2.render("nächste Karte", 1, SCHWARZ)
+        nextCardLabel = FONT2.render("nächste Karte", 1, SCHWARZ)
 
         self.mapzoomed = zuschneiden_image(self.mapPicture,
                                            self.getMapPos((0, 0)) + mult((BREITE, HOEHE), 1 / self.zoomfaktor),
@@ -388,7 +381,7 @@ class Execute:
                     self.screen.blit(label, (BREITE - BREITE // 10 + i + 50, HOEHE // 2 - 50))
                     i -= 300
                 self.screen.blit(greystone, (BREITE // 2, HOEHE * 3 // 4))
-                text = self.bigfont.render("%i X " % self.steineOnTable, 1, SCHWARZ)
+                text = FONT2BIG.render("%i X " % self.steineOnTable, 1, SCHWARZ)
                 self.screen.blit(text, (BREITE // 2 - 100, HOEHE * 3 // 4 - 60))
 
             if cardpick:
@@ -404,8 +397,8 @@ class Execute:
                 # AOE indicator
                 if aktiveKarte.showAOE:
                     position = self.getScreenPos(tileCoords(self.getMouseTile()))
-                    size = mult(aktiveKarte.aoe, 16*self.zoomfaktor, True)
-                    pygame.draw.rect(self.screen, (0,0,255),
+                    size = mult(aktiveKarte.aoe, 16 * self.zoomfaktor, True)
+                    pygame.draw.rect(self.screen, (0, 0, 255),
                                      (position, size), 5)
 
             if self.oikeymemory[0] and self.zoomfaktor >= 0.5:
@@ -542,9 +535,6 @@ class Execute:
                         self.oikeymemory[1] = False
             pygame.display.flip()
 
-    def eventKarteSpielen(self, karte):
-        pass
-
     def animieren(self):
         self.screen.fill((150, 150, 0))
         mapblitpos = [0, 0]
@@ -574,6 +564,8 @@ class Execute:
             self.statusMultiPlayer()
         for button in self.buttonsgame:
             button.blitButton(self.screen)
+        for message in self.messages:
+            message.blitmessage(self.screen)
         if self.gameover:
             self.endgamescreen()
         pygame.display.flip()
@@ -715,7 +707,7 @@ class Execute:
                 if anz > 0:
                     zahl = playerAnimals[tierNR]
                     text = self.font2.render(moeglicheTiere[tierNR] + ": %i" % zahl,
-                                             1, (0,0,255))
+                                             1, (0, 0, 255))
                     self.screen.blit(text, [30, a])
                     a += 30
 
@@ -723,8 +715,8 @@ class Execute:
         text = FONT2.render("Game over", 1, SCHWARZ)
         screen.blit(text, (400, 200))
         for player in range(self.playerCount):
-            text = self.font2.render("Spieler %i: %i"%(player, self.points[player]), 1,
-                                                FARBENSPIELER[player])
+            text = self.font2.render("Spieler %i: %i" % (player, self.points[player]), 1,
+                                     FARBENSPIELER[player])
             screen.blit(text, (400, 300 + 100 * player))
 
     def getMapPos(self, pos):
@@ -822,6 +814,7 @@ class Execute:
 
     def killserver(self):
         self.msg.append((KILLSERVER,))
+
 
 if __name__ == "__main__":
     Execute(IMAGES)

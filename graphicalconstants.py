@@ -2,11 +2,13 @@ import pygame
 pygame.font.init()
 # menu
 GROESSEBUTTONS = 300
+GROESSEMESSAGES = (BREITE // 6, HOEHE // 5)
 # Game
 ZOOM = 0.9
 GROESSEBUTTONSGAME = 200
 GROESSEBUTTONSNEUERZUG = 200
 GROESSECARD = (200, 300)
+BARBREITE = int(BREITE - BREITE / 6)
 # Farben
 WEISS = (255, 255, 255)
 SCHWARZ = (0, 0, 0)
@@ -16,7 +18,7 @@ FARBENSPIELER = [(0, 0, 255), (255, 0, 0),
 # Schriftarten
 FONT1 = pygame.font.SysFont("chiller", 50)
 FONT2 = pygame.font.SysFont("Times", 30)
-
+FONT2BIG = pygame.font.SysFont("Times", 70)
 # Bildgroessen
 BILDGROESSESCHNECKE = (16, 8)
 BILDGROESSEMAUS = (16, 16)
