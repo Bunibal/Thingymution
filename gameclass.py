@@ -196,7 +196,7 @@ class Game:
     def encodeGameState(self, tile):
         stateall = [(obj.desc, obj.getPos(), obj.popGroesse,
                      obj.id, obj.player, obj.imFlug) for obj in self.livingThings]
-        if ((0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry)):
+        if (0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry):
             statetile = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
                                                           obj.id, obj.player, obj.imFlug,
                                                           obj.hunger, obj.getFitness(), obj.mutationen) for obj in

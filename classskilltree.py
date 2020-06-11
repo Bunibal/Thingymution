@@ -1,9 +1,8 @@
 from Bildermusicsounds import *
 from mutations import *
 import random
+from skilltrees import *
 
-skilltreeslug = [[{"Mutation": getFitness}, {"Mutation": getEvasion}],
-                 [{"Mutation": getFast, "Parent": 1}, {"Mutation": getInt, "Parent": 1}]]
 POSTIER4 = HOEHE // 6
 POSTIER0 = POSTIER4 * 5
 POSTIER1 = POSTIER4 * 4
@@ -25,6 +24,7 @@ def newMutationAndPos(skilltree, pos):
             return None
     newMut = random.choice(possible)
     return newMut["Mutation"], ((tier+1), skilltree[tier+1].index(newMut))
+from skilltrees import *
 
 class Skilltree:
     def __init__(self, background, animal, treeinfo=skilltreeslug, header=None):
@@ -69,23 +69,11 @@ class Skilltree:
     def blitSkilltree(self, surface, pos):
         surface.blit(self.image, pos)
 
-    def getButtonByPosition(self, pos):
-        return self.buttons[pos[0]][pos[1]]
-
     def findParent(self, button):
         if button.tier == 0:
             return None
         index = self.treeinfo[button.tier][button.indexInTier]["Parent"]
         return self.buttons[button.tier - 1][index]
-
-    def findChildren(self, button):
-        if button.tier == self.tiers - 1:
-            return []
-        children = []
-        for index, button2 in enumerate(self.buttons[button.tier + 1]):
-            if self.treeinfo[button.tier + 1][index]["Parent"] == button.indexInTier:
-                children.append(button2)
-        return children
 
     def unlock(self, pos):
         button = self.clicked(pos)
@@ -96,6 +84,7 @@ class Skilltree:
             button.blitButton(self.image)
             return button.mutation
         return None
+
 
     def clicked(self, pos):
         for tier in self.buttons:
@@ -126,12 +115,3 @@ class Mutationbutton:
 
     def unlock(self):
         self.unlocked = True
-
-    def __str__(self):
-        return f"Button mit Index {self.tier}, {self.indexInTier} und Mutation {self.mutation['Name']}"
-
-testSkilltree = Skilltree
-if __name__ == "__main__":
-    s = Skilltree(pygame.surface.Surface((1, 1)), "Schnecke")
-    print(s.findChildren(s.buttons[0][1])[1])
-    pygame.quit()
