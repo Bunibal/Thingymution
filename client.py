@@ -29,7 +29,7 @@ def choosecardintype(anzahl_karten):
 # Klasse die alles ausfuehrt###############################################################
 
 class Execute:
-    def __init__(self, images):
+    def __init__(self, screen, images):
         self.origImages = images
         self.workingImages = {}
         self.uhr = pygame.time.Clock()
@@ -45,6 +45,10 @@ class Execute:
         for img in images:
             val = images[img]
             self.workingImages[img] = pygame.transform.scale(val[0], val[2])
+        self.specialInfoAnimals = []  # Tiere für die man spezielle Info anfragt
+        self.messages = []
+
+        # Muss als letztes stehen
         self.menu()
 
     def menu(self):
@@ -196,6 +200,7 @@ class Execute:
         while self.inGame:
             self.uhr.tick(FPSGAME)
             if not self.singleplayer:
+                self.msg.append((INFOANIMALS, self.specialInfoAnimals))
                 incMsg = self.theNetwork.send(self.msg)
                 self.msg = [False]
                 self.interpretServerMsg(incMsg)
@@ -472,7 +477,6 @@ class Execute:
                                     self.kartenGespielt += 1
                                     aktiveKarte = karte
                                     if karte.type == "Umwelt":
-                                        self.eventKarteSpielen(karte)
                                         if karte.targeting == "NONE":
                                             self.nextcard()
                                         elif karte.targeting == "TILE":
@@ -543,6 +547,9 @@ class Execute:
                 if self.getPlayer(obj) != -1 and self.zeigeSpieler:
                     pygame.draw.circle(self.screen, FARBENSPIELER[self.getPlayer(obj)],
                                        rect.center, int(3 * self.zoomfaktor))
+            if rect.collidepoint(self.mauspos):
+                self.objectOnMouse = obj
+
         self.screen.blit(bar, (BARBREITE, 0))
         if self.zeigeStats:
             self.screen.blit(bar, (0, 0))
@@ -725,23 +732,14 @@ class Execute:
 
     # Interpretiere die server messages
     def interpretServerMsg(self, incMsg):
-        if incMsg is not None:
-            try:
-                action = incMsg[0]
-                self.points = incMsg[1][0]
-                self.playerCount = incMsg[1][1]
-                self.gameInfo = incMsg[2]
-                self.plantFoodInTile = incMsg[3][0]
-                self.objectInfoInTile = incMsg[3][1:]
-            except:
-                print(incMsg, "does not have the right format.")
-
-            if action == TURN and not self.zugpause:
-                self.neuerZug()
-            elif action == GAMEOVER:
-                self.gameover = True
-        else:
-            print("Empfangene Information fehlerhaft")
+        action, self.points, self.playerCount, self.gameInfo, \
+                self.plantFoodInTile,self.objectInfoInTile, self.notifications = incMsg
+        for n in self.notifications:
+            print(n)
+        if action == TURN and not self.zugpause:
+            self.neuerZug()
+        elif action == GAMEOVER:
+            self.gameover = True
 
     def getDesc(self, tier):
         if self.singleplayer:
@@ -816,5 +814,6 @@ class Execute:
         self.msg.append((KILLSERVER,))
 
 
+
 if __name__ == "__main__":
-    Execute(IMAGES)
+    Execute(screen, IMAGES)

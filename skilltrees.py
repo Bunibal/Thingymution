@@ -1,3 +1,5 @@
+from graphicalconstants import *
+from mutations import *
 skilltreeslug = [[{"Mutation": getFitness}, {"Mutation": getEvasion}],
                  [{"Mutation": getFast, "Parent": 1}, {"Mutation": getInt, "Parent": 1}]]
 POSTIER4 = HOEHE // 6

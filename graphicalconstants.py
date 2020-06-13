@@ -1,5 +1,14 @@
 import pygame
+import tkinter as tk
 pygame.font.init()
+
+root = tk.Tk()
+
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+
+GROESSE = BREITE, HOEHE = screen_width, screen_height
+
 # menu
 GROESSEBUTTONS = 300
 GROESSEMESSAGES = (BREITE // 6, HOEHE // 5)
@@ -13,7 +22,8 @@ BARBREITE = int(BREITE - BREITE / 6)
 WEISS = (255, 255, 255)
 SCHWARZ = (0, 0, 0)
 FARBENSPIELER = [(0, 0, 255), (255, 0, 0),
-                 (0, 255, 0), (0, 255, 255), (255, 255, 0), (255, 0, 255), (150, 255, 150)]
+                 (0, 255, 0), (0, 255, 255), (255, 255, 0), (255, 0, 255), (150, 255, 150),
+                 (200,200,0), (0, 150, 255), (255, 100, 50)]
 
 # Schriftarten
 FONT1 = pygame.font.SysFont("chiller", 50)

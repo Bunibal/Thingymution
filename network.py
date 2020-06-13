@@ -1,5 +1,6 @@
-import socket
 import pickle
+import socket
+
 
 class Network:
     def __init__(self, serverIp):
@@ -8,6 +9,7 @@ class Network:
         self.port = 5555
         self.addr = (self.server, self.port)
         self.startInfo = self.connect()
+        self.msgId = 0
 
     def getStartInfo(self):
         return self.startInfo
@@ -37,11 +39,41 @@ class Network:
     def send(self, data):
         try:
             self.client.send(pickle.dumps(data))
-            data = self.client.recv(4096 * 128)
         except socket.error as e:
             print(e)
-        try:
-            msg = pickle.loads(data)
-        except:
-            msg = None
+        success = False
+        while not success:
+            try:
+                data = self.client.recv(4096 * 128)
+            except socket.error as e:
+                print(e)
+                self.client.send(pickle.dumps("Error"))
+                continue
+            try:
+                msg = pickle.loads(data)
+            except:
+                self.client.send(pickle.dumps("Error"))
+                continue
+            msg = self.interpretMsg(msg)
+            if msg:
+                success = True
         return msg
+
+    def interpretMsg(self, incMsg):
+        if incMsg is not None:
+            try:
+                action = incMsg[0]
+                points = incMsg[1][0]
+                playerCount = incMsg[1][1]
+                gameInfo = incMsg[2]
+                plantFoodInTile = incMsg[3][0]
+                objectInfoInTile = incMsg[3][1:]
+                notifications = incMsg[4]
+            except:
+                print(incMsg, "does not have the right format.")
+                return False
+
+        else:
+            print("Empfangene Information fehlerhaft")
+            return False
+        return action, points, playerCount, gameInfo, plantFoodInTile, objectInfoInTile, notifications

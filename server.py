@@ -29,10 +29,11 @@ doingTurn = []
 gameover = False
 over = False
 points = []
+notifications = []
 
 
 def threaded_simulation():
-    global forcePausing, over, points, gameover
+    global forcePausing, over, points, gameover, notifications
     print("Simulation gestartet")
     uhr = Clock()
     gameLaeuft = True
@@ -50,6 +51,10 @@ def threaded_simulation():
                 pointsRN = game.getpoints(playerCount, POINTS)
                 for i in range(len(points)):
                     points[i] += pointsRN[i]
+        newNots = game.retrieveNotifications()
+        for notf in newNots:
+            for plI in activePlayers:
+                notifications[plI].append(notf)
         if game.frames % 100 == 1:
             print("Game Laeuft, Kreaturen:", len(game.livingThings))
 
@@ -68,6 +73,8 @@ def threaded_client(conn, player):
     print("Player %i joined" % player)
     reply = ""
     tile = (0, 0)
+    infoAnimals = []
+    error = False # Sent information had errors
     while True:
         try:
             data = conn.recv(2048)
@@ -85,35 +92,43 @@ def threaded_client(conn, player):
             except:
                 msg = [False]
                 print("Couldn't unpickle")
-            amKartenSpielen = msg[0]
-            doingTurn[player] = amKartenSpielen
-            for i in range(1, len(msg)):
-                if msg[i][0] == SPAWNTIER:
-                    for j in range(msg[i][3]):
-                        game.addCreature(TIERE[msg[i][1]], msg[i][2], player)
-                elif msg[i][0] == GIVEMUTATION:
-                    game.giveMutation(msg[i][1], msg[i][2])
-                elif msg[i][0] == DOEVENT:
-                    EVENTS[msg[i][1]](game, msg[i][2])
-                elif msg[i][0] == MOUSETILE:
-                    tile = msg[i][1]
-                elif msg[i][0] == ADVANCE:
-                    game.mutate(msg[i][1])
-                elif msg[i][0] == KILLSERVER:
-                    over = True
-        msgTo = msgToClient(player, tile)
+            if msg == "Error":
+                error = True
+            else:
+                amKartenSpielen = msg[0]
+                doingTurn[player] = amKartenSpielen
+                for i in range(1, len(msg)):
+                    if msg[i][0] == SPAWNTIER:
+                        for j in range(msg[i][3]):
+                            game.addCreature(TIERE[msg[i][1]], msg[i][2], player)
+                    elif msg[i][0] == GIVEMUTATION:
+                        game.giveMutation(msg[i][1], msg[i][2])
+                    elif msg[i][0] == DOEVENT:
+                        EVENTS[msg[i][1]](game, msg[i][2])
+                    elif msg[i][0] == MOUSETILE:
+                        tile = msg[i][1]
+                    elif msg[i][0] == ADVANCE:
+                        game.mutate(msg[i][1])
+                    elif msg[i][0] == INFOANIMALS:
+                        infoAnimals = msg[i][1]
+                    elif msg[i][0] == KILLSERVER:
+                        over = True
+        if not error: # If error, the same msg will be sent again
+            msgTo = msgToClient(player, tile, infoAnimals)
         conn.sendall(pickle.dumps(msgTo))
 
     print("Lost connection")
     conn.close()
 
 
-def msgToClient(player, tilemouse):
+def msgToClient(player, tilemouse, infoAnimals):
     global forcePausing
     startturn = forcePausing[player]
     if startturn:
         forcePausing[player] = False
-    stateall, statetile = game.encodeGameState(tilemouse)
+    stateall, statetile = game.encodeGameState(tilemouse, infoAnimals)
+    sendNots = notifications[player]
+    notifications[player] = notifications[player][len(sendNots):] # um keine notifications zu verlieren
     if len(stateall) > TIERCAP:
         stateall = stateall[:TIERCAP]
         print("Warnung: Zu viele Tiere")
@@ -123,7 +138,7 @@ def msgToClient(player, tilemouse):
         action = TURN
     else:
         action = NOTURN
-    return [action, (points, playerCount), stateall, statetile]
+    return [action, (points, playerCount), stateall, statetile, sendNots]
 
 playerCount = 0
 s.settimeout(10)
@@ -143,6 +158,7 @@ while True:
         doingTurn.append(False)
         forcePausing.append(True)
         points.append(0)
+        notifications.append([])
         start_new_thread(threaded_client, (conn, playerCount))
         playerCount += 1
     if over:

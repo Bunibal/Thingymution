@@ -1,21 +1,12 @@
-from graphicalconstants import *
-import tkinter as tk
-import pygame
 import os
 import pytmx
-
+from graphicalconstants import *
 
 
 def loadandscale(file, scale):
     return pygame.transform.scale(pygame.image.load(file).convert(), scale)
 
 
-root = tk.Tk()
-
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-
-GROESSE = BREITE, HOEHE = screen_width, screen_height
 TRANSPARENCY = (13, 66, 23)
 
 pygame.init()
@@ -61,8 +52,8 @@ singvogelFliegendImage = pygame.image.load("singvogelflying.png").convert_alpha(
 buttons1 = pygame.transform.scale(pygame.image.load("buttons1.png").convert(),
                                   (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
 bar = pygame.transform.scale(pygame.image.load("bar.png").convert(), (BREITE // 6, HOEHE))
-umweltimage = loadandscale("umweltmessage.png", GROESSEMESSAGES)
-warningmessage = loadandscale("warningmessage.png", GROESSEMESSAGES)
+# umweltimage = loadandscale("umweltmessage.png", GROESSEMESSAGES)
+# warningmessage = loadandscale("warningmessage.png", GROESSEMESSAGES)
 # images to description
 IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
@@ -77,7 +68,7 @@ IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
           "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
           "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
 
-MESSAGEIMAGES = {"Umwelt": umweltimage, "warning": warningmessage}
+#MESSAGEIMAGES = {"Umwelt": umweltimage, "warning": warningmessage}
 
 # hier GUI
 buttonzug = pygame.transform.scale(pygame.image.load("zugbutton.png").convert(),

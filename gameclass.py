@@ -2,7 +2,7 @@ from animals import *
 from gameconstants import *
 from terrainstats import *
 from Bildermusicsounds import MAPFILES
-from skilltree import *
+from classskilltree import *
 
 
 def getTileTerrainAndSet(map, pos, layer=3, schonGefunden=[-1, -1, -1, -1]):
@@ -63,6 +63,7 @@ class Game:
         self.mutations_list = []
         self.creatureIdCount = 0
         self.modifiers = []
+        self.notifications = []
 
     def levelmenu(self):
         pass
@@ -87,6 +88,7 @@ class Game:
         newCreature.player = player
         self.creatureIdCount += 1
         self.livingThings.append(newCreature)
+        self.sendNotification("Tier gespawnt", newCreature.desc)
         return newCreature
 
     def addModifier(self, effectType, duration=-1):
@@ -193,18 +195,26 @@ class Game:
                 return c
         return None
 
-    def encodeGameState(self, tile):
+    def encodeGameState(self, tile, animalIds):
         stateall = [(obj.desc, obj.getPos(), obj.popGroesse,
                      obj.id, obj.player, obj.imFlug) for obj in self.livingThings]
         if (0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry):
-            statetile = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
+            stateextra = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
                                                           obj.id, obj.player, obj.imFlug,
                                                           obj.hunger, obj.getFitness(), obj.mutationen) for obj in
                                                          self.livingThings
-                                                         if obj.tile == tile]
+                                                         if obj.id in animalIds]
         else:
-            statetile = [None]
-        return (stateall, statetile)
+            stateextra = [None]
+        return (stateall, stateextra)
+
+    def retrieveNotifications(self):
+        nots = self.notifications
+        self.notifications = []
+        return nots
+
+    def sendNotification(self, type, content = None):
+        self.notifications.append((type, content))
 
     def getpoints(self, players, amount):
         playerPts = players * [0]
