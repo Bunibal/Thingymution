@@ -5,7 +5,7 @@ import sys
 from gameelements import *
 from network import *
 from widgets import *
-from classskilltree import *
+from skilltreeclass import *
 from cards import *
 
 SONG_END = pygame.USEREVENT + 1
@@ -267,9 +267,10 @@ class Execute:
                     if event.button == pygame.BUTTON_RIGHT:
                         if self.inskilltree:
                             if self.skilltreePoints > 0:
-                                mut = self.testsktr.unlock(self.mauspos)
-                                if mut != None:
+                                mutpos = self.testsktr.unlock(self.mauspos)
+                                if mutpos != None:
                                     self.skilltreePoints -= 1
+                                    self.unlockMutation(mutpos)
                         else:
                             for creature in self.tiere:
                                 self.spawn(creature, self.getMapPos(self.mauspos), 10)
@@ -809,6 +810,9 @@ class Execute:
         if self.singleplayer:
             return
         self.msg.append((ADVANCE, animalId))
+
+    def unlockMutation(self, posInTree):
+        self.msg.append((UNLOCK, posInTree))
 
     def killserver(self):
         self.msg.append((KILLSERVER,))

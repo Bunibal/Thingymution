@@ -2,7 +2,7 @@ from animals import *
 from gameconstants import *
 from terrainstats import *
 from Bildermusicsounds import MAPFILES
-from classskilltree import *
+from skilltreeclass import *
 
 
 def getTileTerrainAndSet(map, pos, layer=3, schonGefunden=[-1, -1, -1, -1]):
@@ -64,6 +64,7 @@ class Game:
         self.creatureIdCount = 0
         self.modifiers = []
         self.notifications = []
+        self.unlockedMutations = []
 
     def levelmenu(self):
         pass
@@ -177,15 +178,24 @@ class Game:
             return False
         target.addMutation(mutation)
 
-    def mutate(self, creatureId):
+    def mutate(self, creatureId, player):
         creature = self.getCreatureById(creatureId)
         indizes = creature.skilltreepos
         new = newMutationAndPos(skilltreeslug, indizes)
         if new == None:
             return
         newMutation, newIndizes = new
-        creature.addMutation(newMutation)
-        creature.skilltreepos = newIndizes
+        if self.isUnlocked(newIndizes, player):
+            creature.addMutation(newMutation)
+            creature.skilltreepos = newIndizes
+        else:
+            self.sendNotification("IDK", f"Mutation nicht freigeschalten, {new}, {player}, {self.unlockedMutations[player]}")
+
+    def unlockMutation(self, skilltreepos, playerNbr):
+        self.unlockedMutations[playerNbr].append(skilltreepos)
+
+    def isUnlocked(self, skilltreepos, playerNbr):
+        return skilltreepos in self.unlockedMutations[playerNbr]
 
     # noch recht slow weil ich faul bin
 
@@ -203,10 +213,13 @@ class Game:
                                                           obj.id, obj.player, obj.imFlug,
                                                           obj.hunger, obj.getFitness(), obj.mutationen) for obj in
                                                          self.livingThings
-                                                         if obj.id in animalIds]
+                                                         if obj.id in animalIds or obj.tile == tile]
         else:
             stateextra = [None]
         return (stateall, stateextra)
+
+    def addPlayer(self):
+        self.unlockedMutations.append([])
 
     def retrieveNotifications(self):
         nots = self.notifications

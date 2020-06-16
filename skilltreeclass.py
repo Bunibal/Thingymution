@@ -82,7 +82,7 @@ class Skilltree:
         if button.tier == 0 or self.findParent(button).unlocked:
             button.unlock()
             button.blitButton(self.image)
-            return button.mutation
+            return button.indizes
         return None
 
 

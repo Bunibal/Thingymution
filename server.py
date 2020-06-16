@@ -108,9 +108,11 @@ def threaded_client(conn, player):
                     elif msg[i][0] == MOUSETILE:
                         tile = msg[i][1]
                     elif msg[i][0] == ADVANCE:
-                        game.mutate(msg[i][1])
+                        game.mutate(msg[i][1], player)
                     elif msg[i][0] == INFOANIMALS:
                         infoAnimals = msg[i][1]
+                    elif msg[i][0] == UNLOCK:
+                        game.unlockMutation(msg[i][1], player)
                     elif msg[i][0] == KILLSERVER:
                         over = True
         if not error: # If error, the same msg will be sent again
@@ -159,6 +161,7 @@ while True:
         forcePausing.append(True)
         points.append(0)
         notifications.append([])
+        game.addPlayer()
         start_new_thread(threaded_client, (conn, playerCount))
         playerCount += 1
     if over:
