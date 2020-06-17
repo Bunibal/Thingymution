@@ -5,6 +5,7 @@ from gameconstants import *
 from terrainstats import *
 from mutations import *
 
+
 class Lebewesen:
     desc = "basicLebewesen"
     def __init__(self, game, startpos=(400, 400), startangle=None, info=None):
@@ -244,7 +245,7 @@ class Lebewesen:
 
 class Schnecke(Lebewesen):
     desc = "Schnecke"
-
+    basestats = SCHNECKEBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 15
@@ -291,7 +292,7 @@ class Schnecke(Lebewesen):
 
 class Kaefer(Lebewesen):
     desc = "Käfer"
-
+    basestats = KAEFERBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 20
@@ -334,6 +335,7 @@ class Kaefer(Lebewesen):
 
 class Maus(Lebewesen):
     desc = "Maus"
+    basestats = MAUSBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 5
@@ -389,7 +391,6 @@ class Maus(Lebewesen):
 
 class Krabbe(Lebewesen):
     desc = "Krabbe"
-
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 10
@@ -448,7 +449,7 @@ class Krabbe(Lebewesen):
 
 class Falke(Lebewesen):
     desc = "Falke"
-
+    basestats = FALKEBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 5
@@ -525,7 +526,7 @@ class Falke(Lebewesen):
 
 class Singvogel(Lebewesen):
     desc = "Singvogel"
-
+    basestats = SINGVOGELBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 7
@@ -729,7 +730,7 @@ class Aal(Lebewesen):
 
 class Fuchs(Lebewesen):
     desc = "Fuchs"
-
+    basestats = FUCHSBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 3
@@ -795,7 +796,7 @@ class Fuchs(Lebewesen):
 
 class Kaninchen(Lebewesen):
     desc = "Kaninchen"
-
+    basestats = KANINCHENBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 5
@@ -839,7 +840,7 @@ class Kaninchen(Lebewesen):
 
 class Ziege(Lebewesen):
     desc = "Ziege"
-
+    basestats = ZIEGEBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         if info == None:
             self.popGroesse = 4

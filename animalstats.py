@@ -1,4 +1,8 @@
 # statsslug
+SCHNECKEBASESTATS = {"Speed": 2.5, "Eatspeed": 0.05,  # Essen pro Tier und Sekunde
+"Hungerres" : 2, "Hungerpersec": 0.009, "Fitness": 1.018,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 2, "Splitpop" : 50, "Size" : 1, "Targets": [], "OptimalTemp": 25,
+"Temprange" : 20, "Evasion": -4, "Precision": -5}
 SCHNECKEV = 2.5
 SCHNECKEESSEN = 0.05  # Essen pro Tier und Sekunde
 SCHNECKEHUNGERRES = 2
@@ -13,6 +17,10 @@ SCHNECKEEVASION = -4
 SCHNECKEPREC = -5
 
 # statsmouse
+MAUSBASESTATS = {"Speed": 8, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
+"Hungerres" : 1.2, "Hungerpersec": 0.09, "Fitness": 1.012,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 30, "Size" : 3, "Targets": ["Schnecke", "Käfer"],
+"OptimalTemp": 20, "Temprange" : 20, "Evasion": 0, "Precision": 0}
 MAUSV = 8
 MAUSESSEN = 0.5  # Essen pro Tier und Sekunde
 MAUSHUNGERRES = 1.2
@@ -43,7 +51,10 @@ KRABBEINTELLIGENZ = 1
 KRABBEEVASION = -2
 KRABBEPREC = -2
 # Falkestats
-
+FALKEBASESTATS = {"Speed": 5, "SpeedFLY": 30, "Eatspeed": 1,  # Essen pro Tier und Sekunde
+"Hungerres" : 0.7, "Hungerpersec": 0.05, "HungerpersecFLY": 0.09, "Fitness": 1.01,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 15, "Size" : 10, "Targets": ["Maus", "Käfer", "Singvogel"],
+"OptimalTemp": 15, "Temprange" : 20, "Intelligence": 2, "Evasion": 2, "Precision": 3}
 FALKEVGEHEND = 5
 FALKEVFLIEGEND = 30
 FALKEESSEN = 1  # Essen pro Tier und Sekunde
@@ -53,7 +64,7 @@ HUNGERFALKEFLIEGEND = 0.09
 FITNESS_FALKE = 1.01  # ~ Chance einer Schnecke sich zu teilen pro Sekunde
 FALKEDECINTERVAL = 3
 TEILPOPGROESSEFALKE = 15
-FALKEGROESSE = 4
+FALKEGROESSE = 10
 ANGRIFFSLISTEFALKE = ["Maus", "Käfer", "Singvogel"]
 FALKETEMP, FALKETEMPRANGE = 15, 20
 FALKEINTELLIGENZ = 2
@@ -61,10 +72,14 @@ FALKESTAERKE = 5
 FALKEEVASION = 2
 FALKEPREC = 3
 # SINGVOGELstats
-
+SINGVOGELBASESTATS = {"Speed": 5, "SpeedFLY": 25, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
+"Hungerres" : 1.2, "Hungerpersec": 0.04, "HungerpersecFLY": 0.06, "Fitness": 1.013,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 4, "Splitpop" : 20, "Size" : 5, "Targets": ["Schnecke", "Käfer"],
+"OptimalTemp": 25, "Temprange" : 15, "Intelligence": 2, "Evasion": 1, "Precision": 2,
+"Power": 2}
 SINGVOGELVGEHEND = 5
 SINGVOGELVFLIEGEND = 25
-SINGVOGELESSEN = 1.5  # Essen pro Tier und Sekunde
+SINGVOGELESSEN = 0.5  # Essen pro Tier und Sekunde
 SINGVOGELHUNGERRES = 1.2
 HUNGERSINGVOGELGEHEND = 0.04
 HUNGERSINGVOGELFLIEGEND = 0.06
@@ -80,6 +95,11 @@ SINGVOGELEVASION = 1
 SINGVOGELPREC = 2
 
 # statskaefer
+KAEFERBASESTATS = {"Speed": 4, "Eatspeed": 0.05,  # Essen pro Tier und Sekunde
+"Hungerres" : 1., "Hungerpersec": 0.018, "Fitness": 1.023,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 60, "Size" : 0.6, "Targets": [],
+"OptimalTemp": 20, "Temprange" : 30, "Intelligence": 0, "Evasion": -3, "Precision": -2,
+"Power": 0}
 KAEFERV = 4
 KAEFERESSEN = 0.05  # Essen pro Schnecke und Sekunde
 KAEFERHUNGERRES = 1.0
@@ -109,6 +129,11 @@ DOKTORFISCHEVASION = -1
 DOKTORFISCHPREC = -3
 
 # statsFUCHS
+FUCHSBASESTATS = {"Speed": 15, "SpeedHUNT": 40, "Eatspeed": 2,  # Essen pro Tier und Sekunde
+"Hungerres" : 1.4, "Hungerpersec": 0.1, "Fitness": 1.007,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 15, "Size" : 10, "Targets": ["Maus", "Kaninchen"],
+"OptimalTemp": 15, "Temprange" : 23, "Intelligence": 2, "Evasion": 1, "Precision": 2,
+"Power": 5}
 FUCHSV = 15
 FUCHSVHUNT = 40
 FUCHSESSEN = 2  # Essen pro Tier und Sekunde
@@ -125,6 +150,11 @@ FUCHSEVASION = 1
 FUCHSPREC = 2
 
 # statskaninchen
+KANINCHENBASESTATS = {"Speed": 15, "Eatspeed": 0.3,  # Essen pro Tier und Sekunde
+"Hungerres" : 1.0, "Hungerpersec": 0.08, "Fitness": 1.011,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 25, "Size" : 5, "Targets": [],
+"OptimalTemp": 20, "Temprange" : 20, "Intelligence": 2, "Evasion": 1, "Precision": -2,
+"Power": 0}
 KANINCHENV = 15
 KANINCHENESSEN = 0.3  # Essen pro Schnecke und Sekunde
 KANINCHENHUNGERRES = 1.0
@@ -140,6 +170,11 @@ KANINCHENEVASION = 1
 KANINCHENPREC = -2
 
 # statsziege
+ZIEGEBASESTATS = {"Speed": 20, "Eatspeed": 0.3,  # Essen pro Tier und Sekunde
+"Hungerres" : 2., "Hungerpersec": 0.15, "Fitness": 1.006,  # ~ Chance eines Tiers sich zu teilen pro Sekunde
+"Decinterval": 3, "Splitpop" : 10, "Size" : 5, "Targets": [],
+"OptimalTemp": 0, "Temprange" : 10, "Intelligence": 3, "Evasion": 1, "Precision": -2,
+"Power": 0}
 ZIEGEV = 20
 ZIEGEESSEN = 0.3  # Essen pro Tier und Sekunde
 ZIEGEHUNGERRES = 2

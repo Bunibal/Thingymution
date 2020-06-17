@@ -24,7 +24,6 @@ def newMutationAndPos(skilltree, pos):
             return None
     newMut = random.choice(possible)
     return newMut["Mutation"], ((tier+1), skilltree[tier+1].index(newMut))
-from skilltrees import *
 
 class Skilltree:
     def __init__(self, background, animal, treeinfo=skilltreeslug, header=None):
