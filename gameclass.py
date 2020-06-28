@@ -4,7 +4,6 @@ from terrainstats import *
 from Bildermusicsounds import MAPFILES
 from skilltreeclass import *
 
-
 def getTileTerrainAndSet(map, pos, layer=3, schonGefunden=[-1, -1, -1, -1]):
     try:
         props = map.get_tile_properties(pos[0], pos[1], layer)
@@ -129,7 +128,7 @@ class Game:
             print("Warnung! Zuviel zu essen gemacht!")
         obj.changePop(-menge)
         tilex, tiley = getTile(obj.getPos())
-        self.tileMatrix[tilex][tiley]["FrischFleisch"].append([self.frames, obj.desc, 0, menge * obj.groesse])
+        self.tileMatrix[tilex][tiley]["FrischFleisch"].append([self.frames, obj.desc, 0, menge * obj.getSize()])
 
     def kampfaustragen(self, objekte1, objekte2, menge):
         prec1, ev2 = objekte1.getPrecision(), objekte2.getEvasion()
@@ -138,10 +137,10 @@ class Game:
         else:
             evchance = 1 - np.power(2.0, prec1 - ev2)
         if random.random() > evchance:  # If not evaded
-            if objekte1.staerke > objekte2.staerke:
+            if objekte1.getPower() > objekte2.getPower():
                 self.macheZuEssen(objekte2, menge)
 
-            elif objekte2.staerke > objekte1.staerke:
+            elif objekte2.getPower() > objekte1.getPower():
                 self.macheZuEssen(objekte1, menge)
             else:
                 tode1 = np.random.binomial(menge, 0.5)
@@ -154,7 +153,9 @@ class Game:
         for x in range(section, self.tilenbrx, numberofSections):
             for y in range(self.tilenbry):
                 terrains = self.tileMatrix[x][y]["Terrain"]
-                mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
+                #mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
+                mean = PLANTGROWTH[terrains[0]] + PLANTGROWTH[terrains[1]] + \
+                       PLANTGROWTH[terrains[2]] + PLANTGROWTH[terrains[3]]
                 essen = self.getPflanzenEssen((x, y))
                 neuEssen = min(mean * MAXPFLANZEN, essen + mean * PFLANZENREGENERATION)
                 self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen
@@ -167,8 +168,8 @@ class Game:
     def getTerrain(self, pos, mapCoords=True):
         if not mapCoords:
             pos = self.getMapPos(pos)
-        x, y = mult(pos, 1 / 16, True)
-        x1, y1 = mult(pos, 1 / 8, True)
+        x, y = getTile(pos)
+        x1, y1 = mult(pos, 1/8, True)
         xx, yy = x1 % 2, y1 % 2
         return self.tileMatrix[x][y]["Terrain"][xx + 2 * yy]
 
@@ -210,10 +211,10 @@ class Game:
                      obj.id, obj.player, obj.imFlug) for obj in self.livingThings]
         if (0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry):
             stateextra = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
-                                                          obj.id, obj.player, obj.imFlug,
-                                                          obj.hunger, obj.getFitness(), obj.mutationen) for obj in
-                                                         self.livingThings
-                                                         if obj.id in animalIds or obj.tile == tile]
+                                                           obj.id, obj.player, obj.imFlug,
+                                                           obj.hunger, obj.getRealFitness(), obj.mutationen) for obj in
+                                                          self.livingThings
+                                                          if obj.id in animalIds or obj.tile == tile]
         else:
             stateextra = [None]
         return (stateall, stateextra)
@@ -276,7 +277,9 @@ if __name__ == "__main__":
 
     game = Game(0)
     for i in range(999):
-        game.addCreature(Schnecke, (200, 1200))
+        game.addCreature(Kaefer, (200, 1200))
+        # game.addCreature(Maus, (200,1200))
+        #game.addCreature(Falke, (200, 1200))
     createAndMonitor(Schnecke, (200, 1200),
                      ["MUTGETFAST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST"],
                      steps=5000)

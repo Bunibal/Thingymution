@@ -22,6 +22,8 @@ def mult(v, a, toInteger=False):
         return int(v[0] * a), int(v[1] * a)
     return (v[0] * a, v[1] * a)
 
+def intDivision(v, a):
+    return int(v[0] // a), int(v[1] // a)
 
 def addieren(v1, v2):
     return (v1[0] + v2[0], v1[1] + v2[1])
@@ -42,7 +44,7 @@ def calcAngle(pos):
 
 
 def getTile(pos):
-    return mult(pos, 1 / 16, True)
+    return mult(pos, 1/16, True)
 
 def tileCoords(tile):
     return mult(tile, 16, True)

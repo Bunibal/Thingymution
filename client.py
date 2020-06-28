@@ -779,7 +779,7 @@ class Execute:
 
     def getFitness(self, tier):
         if self.singleplayer:
-            return tier.getFitness()
+            return tier.getRealFitness()
         return tier[7]
 
     def getMutations(self, tier):
