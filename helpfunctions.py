@@ -38,8 +38,8 @@ def getSpeeds(speed, angle):
     return math.cos(angle) * speed, math.sin(angle) * speed
 
 
-def calcAngle(pos):
-    z = np.array(pos[0] + pos[1] * 1.j)
+def calcAngle(v):
+    z = np.array(v[0] + v[1] * 1.j)
     return np.angle(z) * 180 / math.pi
 
 

@@ -155,7 +155,7 @@ FUCHSBASESTATS = {"Speed": 15, "SpeedHUNT": 40, "Eatspeed": 2,  # Essen pro Tier
                   # ~ Chance eines Tiers sich zu teilen pro Sekunde
                   "Decinterval": 3, "Startpop": 3, "Splitpop": 15, "Size": 10, "Targets": ["Maus", "Kaninchen"],
                   "OptimalTemp": 15, "Temprange": 23, "Int": 2, "Evasion": 1, "Precision": 2,
-                  "Power": 5, "Swim": 0, "HerbiV": False, "CarniV": True}
+                  "ValidTerrains": "all", "Power": 5, "Swim": 0, "HerbiV": False, "CarniV": True}
 FUCHSV = 15
 FUCHSVHUNT = 40
 FUCHSESSEN = 2  # Essen pro Tier und Sekunde

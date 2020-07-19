@@ -69,11 +69,17 @@ class Game:
         pass
 
     def step(self):
+        if self.frames % BIGSTEPEVERY == 0:
+            self.stepComplex()
+        else:
+            self.stepSimple()
+
+    def stepComplex(self):
         self.frames += 1
-        self.pflanzenRegenerieren(self.frames % FPSGAME, FPSGAME)
+        self.pflanzenRegenerieren(self.frames % PFLANZENSECTIONS, PFLANZENSECTIONS)
         for obj in self.livingThings[:]:
             if obj.alive:
-                obj.everyFrame()
+                obj.everyComplexFrame()
             if not obj.alive:
                 self.livingThings.remove(obj)
                 self.tileMatrix[obj.tile[0]][obj.tile[1]]["Lebewesen"].remove(obj)
@@ -81,6 +87,12 @@ class Game:
             if mod.duration >= 0 and (self.frames - mod.starttime) >= mod.duration * FPSGAME:
                 print(mod.effectType, "has ended")
                 self.modifiers.remove(mod)
+
+    def stepSimple(self):
+        self.frames += 1
+        for obj in self.livingThings[:]:
+            if obj.alive:
+                obj.everySimpleFrame()
 
     def addCreature(self, type, startpos, player=-1, startangle=None, info=None):
         newCreature = type(self, startpos, startangle, info)
@@ -150,14 +162,16 @@ class Game:
             print(objekte1.desc, "evades", objekte2.desc)
 
     def pflanzenRegenerieren(self, section, numberofSections):
+        seconds = numberofSections / CFPSGAME
         for x in range(section, self.tilenbrx, numberofSections):
             for y in range(self.tilenbry):
                 terrains = self.tileMatrix[x][y]["Terrain"]
                 #mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
-                mean = PLANTGROWTH[terrains[0]] + PLANTGROWTH[terrains[1]] + \
-                       PLANTGROWTH[terrains[2]] + PLANTGROWTH[terrains[3]]
+                mean = (PLANTGROWTH[terrains[0]] + PLANTGROWTH[terrains[1]] + \
+                       PLANTGROWTH[terrains[2]] + PLANTGROWTH[terrains[3]]) / 4
+                bonus = mean * seconds
                 essen = self.getPflanzenEssen((x, y))
-                neuEssen = min(mean * MAXPFLANZEN, essen + mean * PFLANZENREGENERATION)
+                neuEssen = min(mean * MAXPFLANZEN, essen + bonus * PFLANZENREGENERATION)
                 self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen
 
     def getLivingThingsInTile(self, tile):
