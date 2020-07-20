@@ -46,7 +46,6 @@ class TempModifier(Modifier):
         self.amount, self.location = amount, location
         self.rect = pygame.rect.Rect(location)
 
-
 # Spiel, animieren
 class Game:
     def __init__(self, mapNr):
@@ -69,17 +68,14 @@ class Game:
         pass
 
     def step(self):
-        if self.frames % BIGSTEPEVERY == 0:
-            self.stepComplex()
-        else:
-            self.stepSimple()
-
-    def stepComplex(self):
         self.frames += 1
-        self.pflanzenRegenerieren(self.frames % PFLANZENSECTIONS, PFLANZENSECTIONS)
+        self.pflanzenRegenerieren(self.frames % PFLANZENSECTIONS, PFLANZENSECTIONS, PFLANZENSECTIONS / FPSGAME)
         for obj in self.livingThings[:]:
             if obj.alive:
-                obj.everyComplexFrame()
+                if self.frames % BIGSTEPEVERY == obj.cycle:
+                    obj.everyComplexFrame()
+                else:
+                    obj.everySimpleFrame()
             if not obj.alive:
                 self.livingThings.remove(obj)
                 self.tileMatrix[obj.tile[0]][obj.tile[1]]["Lebewesen"].remove(obj)
@@ -88,16 +84,12 @@ class Game:
                 print(mod.effectType, "has ended")
                 self.modifiers.remove(mod)
 
-    def stepSimple(self):
-        self.frames += 1
-        for obj in self.livingThings[:]:
-            if obj.alive:
-                obj.everySimpleFrame()
 
     def addCreature(self, type, startpos, player=-1, startangle=None, info=None):
         newCreature = type(self, startpos, startangle, info)
         newCreature.id = self.creatureIdCount
         newCreature.player = player
+        newCreature.cycle = random.randint(0, BIGSTEPEVERY - 1)
         self.creatureIdCount += 1
         self.livingThings.append(newCreature)
         self.sendNotification("Tier gespawnt", newCreature.desc)
@@ -161,15 +153,14 @@ class Game:
         else:
             print(objekte1.desc, "evades", objekte2.desc)
 
-    def pflanzenRegenerieren(self, section, numberofSections):
-        seconds = numberofSections / CFPSGAME
+    def pflanzenRegenerieren(self, section, numberofSections, forSeconds):
         for x in range(section, self.tilenbrx, numberofSections):
             for y in range(self.tilenbry):
                 terrains = self.tileMatrix[x][y]["Terrain"]
                 #mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
                 mean = (PLANTGROWTH[terrains[0]] + PLANTGROWTH[terrains[1]] + \
                        PLANTGROWTH[terrains[2]] + PLANTGROWTH[terrains[3]]) / 4
-                bonus = mean * seconds
+                bonus = mean * forSeconds
                 essen = self.getPflanzenEssen((x, y))
                 neuEssen = min(mean * MAXPFLANZEN, essen + bonus * PFLANZENREGENERATION)
                 self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen

@@ -156,6 +156,10 @@ class Lebewesen:
         if stat == "all":
             for s in STATS:
                 self.updateStats(s)
+                if self.canFly() and s + "FLY" in self.basestats:
+                    self.updateStats(s + "FLY")
+                if self.isHunter() and s + "HUNT" in self.basestats:
+                    self.updateStats(s + "HUNT")
         else:
             base = flat = 0
             factor = 1
@@ -218,7 +222,7 @@ class Lebewesen:
         for xtile in range(self.tile[0] - searchsize, self.tile[0] + searchsize + 1):
             for ytile in range(self.tile[1] - searchsize, self.tile[1] + searchsize + 1):
                 for moegl in self.game.getLivingThingsInTile((xtile, ytile)):
-                    if normabst(self.getPos(), moegl.getPos()) < minabstand and moegl.desc in self.opfer:
+                    if normabst(self.getPos(), moegl.getPos()) < minabstand and moegl.desc in self.getAttackList():
                         opfer = moegl
                         minabst = normabst(self.getPos(), moegl.getPos())
         return opfer
@@ -305,8 +309,17 @@ class Lebewesen:
     def isHerbivore(self):
         return self.basestats["HerbiV"]
 
+    def canFly(self):
+        return self.basestats["Flying"]
+
+    def isHunter(self):
+        return self.basestats["Hunter"]
+
     def getSpeedMultInTerrain(self):
         return SPEEDIN[self.terrain]
+
+    def getAttackList(self):
+        return self.basestats["Targets"]
 
     def terrainValid(self, terrain):
         v = self.basestats["ValidTerrains"]
@@ -436,10 +449,10 @@ class Maus(Lebewesen):
             self.lastAngleChange = self.game.frames
             self.changeAngle(random.random() * 90 - 45)
         amFleischEssen = False
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0.1:
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
             amFleischEssen = True
         elif self.game.getPflanzenEssen(getTile(self.getPos())) > 0.1:
             self.speedMultEssen = 0.5
@@ -449,7 +462,7 @@ class Maus(Lebewesen):
         lwInTile = self.game.getLivingThingsInTile(self.tile)
         if self.hunger > 0.3 and not amFleischEssen:
             for gegner in lwInTile:
-                if gegner.desc in self.basestats["Targets"] and self.hunger > 0.3:
+                if gegner.desc in self.getAttackList() and self.hunger > 0.3:
                     self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                 break
         Lebewesen.everyComplexFrame(self)
@@ -465,7 +478,7 @@ class Maus(Lebewesen):
 
 class Krabbe(Lebewesen):
     desc = "Krabbe"
-
+    basestats = KRABBEBASESTATS
     def __init__(self, game, startpos, startangle=0, info=None):
         Lebewesen.__init__(self, game, startpos, startangle, info)
         # self.moveBy(0, 0)
@@ -490,10 +503,10 @@ class Krabbe(Lebewesen):
         if self.game.frames >= self.lastAngleChange + self.stats["Decinterval"] * FPSGAME:
             self.lastAngleChange = self.game.frames
             self.changeAngle(random.random() * 360 - 180)
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0.1:
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
         elif self.game.getPflanzenEssen(getTile(self.getPos())) > 0.01:
             self.speedMultEssen = 0.5
             self.pflanzenfressen()
@@ -502,7 +515,7 @@ class Krabbe(Lebewesen):
         if (self.game.frames - self.geboren) % 5 == 0 and self.hunger > 0.3:
             lwInTile = self.game.getLivingThingsInTile(self.tile)
             for gegner in lwInTile:
-                if gegner.desc in self.basestats["Targets"]:
+                if gegner.desc in self.getAttackList():
                     self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                     break
         Lebewesen.everyComplexFrame(self)
@@ -541,11 +554,11 @@ class Falke(Lebewesen):
         # self.standardPrecision = FALKEPREC
 
     def everyComplexFrame(self):
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0.001:
             self.nichtFliegen()
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
             self.opferImAuge = None
         else:
             self.speedMultEssen = 1
@@ -568,7 +581,7 @@ class Falke(Lebewesen):
                     self.fliegen()
             lwInTile = self.game.getLivingThingsInTile(self.tile)
             for gegner in lwInTile:
-                if gegner.desc in self.basestats["Targets"] and self.hunger > 0.3:
+                if gegner.desc in self.getAttackList() and self.hunger > 0.3:
                     self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                     break
         Lebewesen.everyComplexFrame(self)
@@ -607,11 +620,11 @@ class Singvogel(Lebewesen):
         # self.standardPrecision = SINGVOGELPREC
 
     def everyComplexFrame(self):
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0.001:
             self.nichtFliegen()
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
             self.opferImAuge = None
         else:
             self.speedMultEssen = 1
@@ -637,7 +650,7 @@ class Singvogel(Lebewesen):
                     self.fliegen()
             lwInTile = self.game.getLivingThingsInTile(self.tile)
             for gegner in lwInTile:
-                if gegner.desc in self.basestats["Targets"] and self.hunger > 0.5:
+                if gegner.desc in self.getAttackList() and self.hunger > 0.5:
                     self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                     break
         Lebewesen.everyComplexFrame(self)
@@ -690,30 +703,30 @@ class Aal(Lebewesen):
 
     def __init__(self, game, startpos, startangle=0, info=None):
         Lebewesen.__init__(self, game, startpos, startangle, info)
-        self.moveBy(0, 0)
-        self.standardSpeed = self.speed = FALKEVGEHEND
-        self.essenProSekunde = FALKEESSEN
-        self.hungerResistenz = FALKEHUNGERRES
-        self.standardW = FITNESS_FALKE
-        self.hungerproframe = HUNGERFALKEGEHEND / FPSGAME
-        self.stats["OptimalTemp"], self.stats["Temprange"] = FALKETEMP, FALKETEMPRANGE
-        self.lastAngleChange = self.game.frames
-        self.groesse = FALKEGROESSE
-        self.fleischfresser = True
-        self.pflanzenfresser = False
-        self.standardStaerke = 5
-        self.opfer = ANGRIFFSLISTEFALKE  # Die Objekte die es angreifen kann
-        self.eatSpeed = FALKEESSEN
-        self.standardInt = 1
-        self.standardEvasion = FALKEEVASION
-        self.standardPrecision = FALKEPREC
+        # self.moveBy(0, 0)
+        # self.standardSpeed = self.speed = FALKEVGEHEND
+        # self.essenProSekunde = FALKEESSEN
+        # self.hungerResistenz = FALKEHUNGERRES
+        # self.standardW = FITNESS_FALKE
+        # self.hungerproframe = HUNGERFALKEGEHEND / FPSGAME
+        # self.stats["OptimalTemp"], self.stats["Temprange"] = FALKETEMP, FALKETEMPRANGE
+        # self.lastAngleChange = self.game.frames
+        # self.groesse = FALKEGROESSE
+        # self.fleischfresser = True
+        # self.pflanzenfresser = False
+        # self.standardStaerke = 5
+        # self.opfer = ANGRIFFSLISTEFALKE  # Die Objekte die es angreifen kann
+        # self.eatSpeed = FALKEESSEN
+        # self.standardInt = 1
+        # self.standardEvasion = FALKEEVASION
+        # self.standardPrecision = FALKEPREC
 
     def everyComplexFrame(self):
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0.001:
             self.nichtFliegen()
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
             self.opferImAuge = None
         else:
             self.speedMultEssen = 1
@@ -736,7 +749,7 @@ class Aal(Lebewesen):
                     self.fliegen()
         lwInTile = self.game.getLivingThingsInTile(self.tile)
         for gegner in lwInTile:
-            if gegner.desc in self.basestats["Targets"] and self.hunger > 0.5:
+            if gegner.desc in self.getAttackList() and self.hunger > 0.5:
                 self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                 break
         if self.imFlug:
@@ -772,10 +785,10 @@ class Fuchs(Lebewesen):
         # self.standardPrecision = FUCHSPREC
 
     def everyComplexFrame(self):
-        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.basestats["Targets"])
+        moegl = self.game.getFrischFleischMenge(getTile(self.getPos()), self.getAttackList())
         if moegl > 0.1 and self.hunger > 0:
             self.speedMultEssen = 0
-            self.tierfressen(self.basestats["Targets"])
+            self.tierfressen(self.getAttackList())
             self.opferImAuge = None
         else:
             self.speedMultEssen = 1
@@ -796,7 +809,7 @@ class Fuchs(Lebewesen):
             if self.hunger > 0.3:
                 lwInTile = self.game.getLivingThingsInTile(self.tile)
                 for gegner in lwInTile:
-                    if gegner.desc in self.basestats["Targets"]:
+                    if gegner.desc in self.getAttackList():
                         self.angriff(gegner, min(self.popGroesse, gegner.popGroesse))
                         break
         Lebewesen.everyComplexFrame(self)

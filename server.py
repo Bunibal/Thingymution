@@ -52,8 +52,6 @@ def threaded_simulation():
                 lastTime = get_ticks()
                 lastFrames = game.frames
             if game.frames >= 20 * GAMELENGTH:
-                print("Gameaus")
-                print(points)
                 gameover = True
             elif game.frames % (20 * SEKUNDENZUG) == 0:
                 forcePausing = playerCount * [True]

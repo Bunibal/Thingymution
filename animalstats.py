@@ -8,7 +8,7 @@ SCHNECKEBASESTATS = {"Speed": 2.5, "Eatspeed": 0.05,  # Essen pro Tier und Sekun
                      # ~ Chance eines Tiers sich zu teilen pro Sekunde
                      "Decinterval": 2, "Startpop": 15, "Splitpop": 50, "Size": 1, "Targets": [], "OptimalTemp": 25,
                      "Temprange": 20, "Evasion": -4, "Precision": -5, "Power": 0, "Int": 0, "ValidTerrains": "all",
-                     "Swim": 0, "HerbiV": True, "CarniV": False}
+                     "Swim": 0, "HerbiV": True, "CarniV": False, "Flying": False, "Hunter": False}
 # SCHNECKEV = 2.5
 # SCHNECKEESSEN = 0.05  # Essen pro Tier und Sekunde
 # SCHNECKEHUNGERRES = 2
@@ -28,7 +28,8 @@ KAEFERBASESTATS = {"Speed": 4, "Eatspeed": 0.05,  # Essen pro Tier und Sekunde
                    # ~ Chance eines Tiers sich zu teilen pro Sekunde
                    "Decinterval": 3, "Startpop": 20, "Splitpop": 60, "Size": 0.6, "Targets": [],
                    "OptimalTemp": 20, "Temprange": 30, "Int": 0, "Evasion": -3, "Precision": -2,
-                   "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False}
+                   "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False, "Flying": False,
+                      "Hunter": False}
 KAEFERV = 4
 KAEFERESSEN = 0.05  # Essen pro Schnecke und Sekunde
 KAEFERHUNGERRES = 1.0
@@ -48,7 +49,8 @@ MAUSBASESTATS = {"Speed": 8, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
                  # ~ Chance eines Tiers sich zu teilen pro Sekunde
                  "Decinterval": 3, "Startpop": 5, "Splitpop": 30, "Size": 3, "Targets": ["Schnecke", "Käfer"],
                  "OptimalTemp": 20, "Temprange": 20, "Evasion": 0, "Precision": 0, "Int": 2, "Power": 1,
-                 "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False}
+                 "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False, "Flying": False,
+                 "Hunter": False}
 # MAUSV = 8
 # MAUSESSEN = 0.5  # Essen pro Tier und Sekunde
 # MAUSHUNGERRES = 1.2
@@ -69,23 +71,23 @@ KRABBEBASESTATS = {"Speed": 2, "Eatspeed": 0.15,  # Essen pro Tier und Sekunde
                    "Hungerres": 3, "Hungerpersec": 0.0045, "Fitness": 1.016,
                    # ~ Chance eines Tiers sich zu teilen pro Sekunde
                    "Decinterval": 10, "Startpop": 10, "Splitpop": 40, "Size": 1.5, "Targets": ["Schnecke"],
-                   "OptimalTemp": 10, "Temprange": 20, "Evasion": -2, "Precision": -2, "Power": 0.5,
+                   "OptimalTemp": 10, "Temprange": 20, "Evasion": -2, "Precision": -2, "Int": 1, "Power": 0.5,
                    "ValidTerrains": [RIVER, RIVERBANK, COASTWATER, COASTGRASS, BEACH], "Swim": 2,
-                   "HerbiV": True, "CarniV": True}
+                   "HerbiV": True, "CarniV": True, "Flying": False,  "Hunter": False}
 
-KRABBEV = 2
-KRABBEESSEN = 0.15  # Essen pro Tier und Sekunde
-KRABBEHUNGERRES = 3
-HUNGERKRABBE = 0.0045
-FITNESS_KRABBE = 1.016  # ~ Chance einer Schnecke sich zu teilen pro Sekunde
-KRABBEDECINTERVAL = 10
-TEILPOPGROESSEKRABBE = 40
-KRABBEGROESSE = 1.5
-ANGRIFFSLISTEKRABBE = ["Schnecke"]
-KRABBETEMP, KRABBETEMPRANGE = 10, 20
-KRABBEINTELLIGENZ = 1
-KRABBEEVASION = -2
-KRABBEPREC = -2
+# KRABBEV = 2
+# KRABBEESSEN = 0.15  # Essen pro Tier und Sekunde
+# KRABBEHUNGERRES = 3
+# HUNGERKRABBE = 0.0045
+# FITNESS_KRABBE = 1.016  # ~ Chance einer Schnecke sich zu teilen pro Sekunde
+# KRABBEDECINTERVAL = 10
+# TEILPOPGROESSEKRABBE = 40
+# KRABBEGROESSE = 1.5
+# ANGRIFFSLISTEKRABBE = ["Schnecke"]
+# KRABBETEMP, KRABBETEMPRANGE = 10, 20
+# KRABBEINTELLIGENZ = 1
+# KRABBEEVASION = -2
+# KRABBEPREC = -2
 # Falkestats
 FALKEBASESTATS = {"Speed": 5, "SpeedFLY": 30, "Eatspeed": 1,  # Essen pro Tier und Sekunde
                   "Hungerres": 0.7, "Hungerpersec": 0.05, "HungerpersecFLY": 0.09, "Fitness": 1.01,
@@ -93,7 +95,8 @@ FALKEBASESTATS = {"Speed": 5, "SpeedFLY": 30, "Eatspeed": 1,  # Essen pro Tier u
                   "Decinterval": 3, "Startpop": 5, "Splitpop": 15, "Size": 10,
                   "Targets": ["Maus", "Käfer", "Singvogel"],
                   "OptimalTemp": 15, "Temprange": 20, "Int": 2, "Evasion": 2, "Precision": 3,
-                  "Power": 5, "ValidTerrains": "all", "Swim": 0, "HerbiV": False, "CarniV": True}
+                  "Power": 5, "ValidTerrains": "all", "Swim": 0, "HerbiV": False, "CarniV": True, "Flying":True,
+                  "Hunter": False}
 FALKEVGEHEND = 5
 FALKEVFLIEGEND = 30
 FALKEESSEN = 1  # Essen pro Tier und Sekunde
@@ -116,7 +119,8 @@ SINGVOGELBASESTATS = {"Speed": 5, "SpeedFLY": 25, "Eatspeed": 0.5,  # Essen pro 
                       # ~ Chance eines Tiers sich zu teilen pro Sekunde
                       "Decinterval": 4, "Startpop": 7, "Splitpop": 20, "Size": 5, "Targets": ["Schnecke", "Käfer"],
                       "OptimalTemp": 25, "Temprange": 15, "Int": 2, "Evasion": 1, "Precision": 2,
-                      "Power": 2, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": True}
+                      "Power": 2, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": True, "Flying": True,
+                      "Hunter": False}
 SINGVOGELVGEHEND = 5
 SINGVOGELVFLIEGEND = 25
 SINGVOGELESSEN = 0.5  # Essen pro Tier und Sekunde
@@ -155,7 +159,8 @@ FUCHSBASESTATS = {"Speed": 15, "SpeedHUNT": 40, "Eatspeed": 2,  # Essen pro Tier
                   # ~ Chance eines Tiers sich zu teilen pro Sekunde
                   "Decinterval": 3, "Startpop": 3, "Splitpop": 15, "Size": 10, "Targets": ["Maus", "Kaninchen"],
                   "OptimalTemp": 15, "Temprange": 23, "Int": 2, "Evasion": 1, "Precision": 2,
-                  "ValidTerrains": "all", "Power": 5, "Swim": 0, "HerbiV": False, "CarniV": True}
+                  "ValidTerrains": "all", "Power": 5, "Swim": 0, "HerbiV": False, "CarniV": True, "Flying": False,
+                      "Hunter": True}
 FUCHSV = 15
 FUCHSVHUNT = 40
 FUCHSESSEN = 2  # Essen pro Tier und Sekunde
@@ -177,7 +182,8 @@ KANINCHENBASESTATS = {"Speed": 15, "Eatspeed": 0.3,  # Essen pro Tier und Sekund
                       # ~ Chance eines Tiers sich zu teilen pro Sekunde
                       "Decinterval": 3, "Startpop": 5, "Splitpop": 25, "Size": 5, "Targets": [],
                       "OptimalTemp": 20, "Temprange": 20, "Int": 2, "Evasion": 1, "Precision": -2,
-                      "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False}
+                      "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False, "Flying": False,
+                      "Hunter": False}
 KANINCHENV = 15
 KANINCHENESSEN = 0.3  # Essen pro Schnecke und Sekunde
 KANINCHENHUNGERRES = 1.0
@@ -198,7 +204,8 @@ ZIEGEBASESTATS = {"Speed": 20, "Eatspeed": 0.3,  # Essen pro Tier und Sekunde
                   # ~ Chance eines Tiers sich zu teilen pro Sekunde
                   "Decinterval": 3, "Startpop": 4, "Splitpop": 10, "Size": 5, "Targets": [],
                   "OptimalTemp": 0, "Temprange": 10, "Int": 3, "Evasion": 1, "Precision": -2,
-                  "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False}
+                  "Power": 0, "ValidTerrains": "all", "Swim": 0, "HerbiV": True, "CarniV": False, "Flying": False,
+                      "Hunter": False}
 ZIEGEV = 20
 ZIEGEESSEN = 0.3  # Essen pro Tier und Sekunde
 ZIEGEHUNGERRES = 2
