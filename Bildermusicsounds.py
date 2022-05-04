@@ -32,43 +32,53 @@ music = ["1 Great pyramids.mp3", "2 Face to face.mp3", "3 Life in forest.mp3", "
 # Hier laden wir ma alle Bilder rein
 MAPPICTURES = [pygame.image.load("maplvl1.png").convert(), pygame.image.load("maplvl2.png").convert()]
 
-schneckeImage = pygame.image.load("slug.png").convert_alpha()
-mausImage = pygame.image.load("mouse.png").convert_alpha()
-krabbeImage = pygame.image.load("crab.png")
-krabbeImage.set_colorkey(TRANSPARENCY)
-krabbeImage = krabbeImage.convert_alpha()
-falkeImage = pygame.image.load("falcon.png").convert_alpha()
-falkeFliegendImage = pygame.image.load("falconflying.png").convert_alpha()
-kaeferImage = pygame.image.load("bug.png")
-kaeferImage.set_colorkey(TRANSPARENCY)
-kaeferImage = kaeferImage.convert_alpha()
-doktorfischimage = pygame.image.load("doctorfish.png").convert_alpha()
-eelimage = pygame.image.load("eel.png").convert_alpha()
-fuchsImage = pygame.image.load("fox.png").convert_alpha()
-kaninchenImage = pygame.image.load("rabbit.png").convert_alpha()
-ziegeImage = pygame.image.load("goat.png").convert_alpha()
-singvogelImage = pygame.image.load("singvogel.png").convert_alpha()
-singvogelFliegendImage = pygame.image.load("singvogelflying.png").convert_alpha()
-buttons1 = pygame.transform.scale(pygame.image.load("buttons1.png").convert(),
-                                  (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
-bar = pygame.transform.scale(pygame.image.load("bar.png").convert(), (BREITE // 6, HOEHE))
+def prepareAnimalImages():
+    schneckeImage = pygame.image.load("slug.png").convert_alpha()
+    mausImage = pygame.image.load("mouse.png").convert_alpha()
+    krabbeImage = pygame.image.load("crab.png")
+    krabbeImage.set_colorkey(TRANSPARENCY)
+    krabbeImage = krabbeImage.convert_alpha()
+    falkeImage = pygame.image.load("falcon.png").convert_alpha()
+    falkeFliegendImage = pygame.image.load("falconflying.png").convert_alpha()
+    kaeferImage = pygame.image.load("bug.png")
+    kaeferImage.set_colorkey(TRANSPARENCY)
+    kaeferImage = kaeferImage.convert_alpha()
+    doktorfischimage = pygame.image.load("doctorfish.png").convert_alpha()
+    eelimage = pygame.image.load("eel.png").convert_alpha()
+    fuchsImage = pygame.image.load("fox.png").convert_alpha()
+    kaninchenImage = pygame.image.load("rabbit.png").convert_alpha()
+    ziegeImage = pygame.image.load("goat.png").convert_alpha()
+    singvogelImage = pygame.image.load("singvogel.png").convert_alpha()
+    singvogelFliegendImage = pygame.image.load("singvogelflying.png").convert_alpha()
+    images = {"Maus": (mausImage, None, BILDGROESSEMAUS),
+              "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
+              "Krabbe": (krabbeImage, None, BILDGROESSEKRABBE),
+              "Doktorfisch": (doktorfischimage, None, BILDGROESSEDOKTORFISCH),
+              "Falke": (falkeImage, None, BILDGROESSEFALKE),
+              "FalkeFLG": (falkeFliegendImage, None, BILDGROESSEFALKE),
+              "Singvogel": (singvogelImage, None, BILDGROESSESINGVOGEL),
+              "SingvogelFLG": (singvogelFliegendImage, None, BILDGROESSESINGVOGEL),
+              "Käfer": (kaeferImage, None, BILDGROESSEKAEFER),
+              "Fuchs": (fuchsImage, None, BILDGROESSEFUCHS),
+              "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
+              "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
+    return images
 # umweltimage = loadandscale("umweltmessage.png", GROESSEMESSAGES)
 # warningmessage = loadandscale("warningmessage.png", GROESSEMESSAGES)
 # images to description
-IMAGES = {"Maus": (mausImage, None, BILDGROESSEMAUS),
-          "Schnecke": (schneckeImage, None, BILDGROESSESCHNECKE),
-          "Krabbe": (krabbeImage, None, BILDGROESSEKRABBE),
-          "Doktorfisch": (doktorfischimage, None, BILDGROESSEDOKTORFISCH),
-          "Falke": (falkeImage, None, BILDGROESSEFALKE),
-          "FalkeFLG": (falkeFliegendImage, None, BILDGROESSEFALKE),
-          "Singvogel": (singvogelImage, None, BILDGROESSESINGVOGEL),
-          "SingvogelFLG": (singvogelFliegendImage, None, BILDGROESSESINGVOGEL),
-          "Käfer": (kaeferImage, None, BILDGROESSEKAEFER),
-          "Fuchs": (fuchsImage, None, BILDGROESSEFUCHS),
-          "Kaninchen": (kaninchenImage, None, BILDGROESSEKANINCHEN),
-          "Ziege": (ziegeImage, None, BILDGROESSEZIEGE)}
+
 
 #MESSAGEIMAGES = {"Umwelt": umweltimage, "warning": warningmessage}
+def prepareOtherImages():
+    global buttonzug, greystone, carddefault, cardfalcon, cardslug, cardmouse, \
+    cardbug, carddoctorfish, cardcrab, cardeel, cardgetfast, cardfitnessboost, \
+    cardpowerboost, cardintboost, cardintboost, cardgetflying, cardmeteorshower, \
+    buttons1, bar
+    pass
+
+buttons1 = pygame.transform.scale(pygame.image.load("buttons1.png").convert(),
+                                  (GROESSEBUTTONSGAME, GROESSEBUTTONSGAME // 5))
+bar = pygame.transform.scale(pygame.image.load("bar.png").convert(), (BREITE // 6, HOEHE))
 
 # hier GUI
 buttonzug = pygame.transform.scale(pygame.image.load("zugbutton.png").convert(),
@@ -83,7 +93,7 @@ cardmouse = pygame.transform.scale(pygame.image.load("cardmouse.png").convert(),
 cardbug = pygame.transform.scale(pygame.image.load("cardbug.png").convert(), GROESSECARD)
 carddoctorfish = pygame.transform.scale(pygame.image.load("carddoctorfish.png").convert(), GROESSECARD)
 cardcrab = pygame.transform.scale(pygame.image.load("cardcrab.png").convert(), GROESSECARD)
-cardeel = pygame.transform.scale(pygame.image.load("cardeel.png").convert(), GROESSECARD)
+#cardeel = pygame.transform.scale(pygame.image.load("cardeel.png").convert(), GROESSECARD)
 
 # jetzt kommen die MUTATIONEN
 cardgetfast = pygame.transform.scale(pygame.image.load("cardgetfast.png").convert(), GROESSECARD)

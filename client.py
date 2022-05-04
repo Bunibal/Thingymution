@@ -117,9 +117,12 @@ class Execute:
     def ipmenu(self):
         buttonEnter = ButtonNormal((int(BREITE // 2 - 150), int(HOEHE // 2)), "Verbinden")
         buttonReturn = ButtonNormal((int(BREITE // 2 - 150), int(HOEHE // 2 + 100)), "Zurück")
-        file = open("lastip.txt", "r")
-        lastIp = file.read()
-        file.close()
+        try:
+            file = open("lastip.txt", "r")
+            lastIp = file.read()
+            file.close()
+        except:
+            lastIp = ""
         self.ipFeld = TextFeld((int(BREITE // 2 - 150), int(HOEHE // 2) - 100), lastIp,
                                self.font2)
         self.ipMenuButtons = (buttonEnter, buttonReturn)
@@ -617,6 +620,7 @@ class Execute:
                 print(self.plantFoodInTile, "ist keine Zahl, tile:", tileRN)
             self.screen.blit(text, [100, 40])
         i = 50
+        #Tierinfo
         for tier in self.objectInfoInTile:
             text = self.font2.render("%s, %i, %.1f, %.3f, %s" % (self.getDesc(tier), self.getAnzahl(tier),
                                                                  self.getHunger(tier), self.getFitness(tier),
@@ -784,7 +788,7 @@ class Execute:
 
     def getMutations(self, tier):
         if self.singleplayer:
-            return tier.mutationen
+           return tier.mutationen
         return tier[8]
 
     # Befehle an Server
@@ -820,4 +824,6 @@ class Execute:
 
 
 if __name__ == "__main__":
-    Execute(screen, IMAGES)
+    imges = prepareAnimalImages()
+    prepareOtherImages()
+    Execute(screen, imges)

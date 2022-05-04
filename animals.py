@@ -19,7 +19,7 @@ class Lebewesen:
             startangle = random.random() * 360
         self.changeAngle(startangle, True)
         if info == None:
-            self.hunger = 0  # Durchschnittlicher Hunger der Lebewesen
+            self.hunger = STARTHUNGER  # Durchschnittlicher Hunger der Lebewesen
             self.alter = 1
             self.mutationen = []
         else:
@@ -123,7 +123,8 @@ class Lebewesen:
             kapazitaet = self.hunger * self.popGroesse
             verfuegbar = self.game.getPflanzenEssen(getTile(self.getPos()))
             essenMenge = min(kapazitaet, verfuegbar,
-                             self.eatSpeed * self.popGroesse / FPSGAME)
+                             self.eatSpeed * self.popGroesse / FPSGAME,
+                             self.eatSpeed * verfuegbar * self.popGroesse / FPSGAME)
             self.game.setPflanzenEssen(getTile(self.getPos()), verfuegbar - essenMenge)
             self.hunger -= essenMenge / self.popGroesse
 
@@ -176,6 +177,9 @@ class Lebewesen:
     def speedMultInTerrain(self):
         return SPEEDIN[self.terrain]
 
+    def getMutationNames(self):
+        return [mut["Name"] for mut in self.mutationen]
+
     def tierfressen(self, arten):
         if self.fleischfresser and self.alive:
             kapazitaet = self.hunger * self.popGroesse
@@ -208,11 +212,22 @@ class Lebewesen:
                         minabst = normabst(self.getPos(), moegl.getPos())
         return opfer
 
+    def randomteilen(self):
+        if self.popGroesse >= self.teilpopGroesse and 1 == random.randint(1, 10 * FPSGAME):
+            groesse = random.randint(1, self.popGroesse - 1)
+            starta = random.randint(0, 359)
+            self.game.addCreature(type(self), (self.posx, self.posy), self.player,
+                                  starta, [self.hunger, self.alter, self.mutationen[:], groesse])
+            self.popGroesse -= groesse
+
     def getFitness(self):
         mutboost = (self.standardW - 1) * self.mutierteStats["FITNESS"]
         tmp = self.game.getTemp(self.terrain, self.tile)
         temperaturAnpassung = np.exp(-((tmp - self.optimalTemp) / self.tempRange) ** 2 / 2)
-        w1 = (self.standardW + mutboost - (self.hunger / self.hungerResistenz) ** 3 * TODFAKTOR)
+        w1 = self.standardW + mutboost
+        w1 = w1 - (self.hunger / self.hungerResistenz) * (self.standardW - 1) \
+                                            * GEBURTENREDUKTIONSFAKTOR
+        w1 = w1 - (self.hunger / self.hungerResistenz) ** 3 * TODFAKTOR
         ##print(temperaturAnpassung, w1)
         return w1 * np.power(temperaturAnpassung, TEMPANPASSKOEFF)
 
@@ -254,7 +269,6 @@ class Schnecke(Lebewesen):
             infoweiter = (h, a, m)
         Lebewesen.__init__(self, game, startpos, startangle, infoweiter)
         self.standardSpeed = self.speed = SCHNECKEV
-        self.standardspeed = SCHNECKEV
         self.eatSpeed = SCHNECKEESSEN
         self.hungerResistenz = SCHNECKEHUNGERRES
         self.standardW = FITNESS_SCHNECKE
@@ -264,6 +278,7 @@ class Schnecke(Lebewesen):
         self.optimalTemp, self.tempRange = SCHNECKETEMP, SCHNECKETEMPRANGE
         self.standardEvasion = SCHNECKEEVASION
         self.standardPrecision = SCHNECKEPREC
+        self.teilpopGroesse = TEILPOPGROESSESCHNECKE
 
     def everyFrame(self):
         if DESERT in self.affinitaet:
@@ -280,13 +295,13 @@ class Schnecke(Lebewesen):
             self.speedMultEssen = 1
         Lebewesen.everyFrame(self)
 
-    def randomteilen(self):
-        if self.popGroesse >= TEILPOPGROESSESCHNECKE and 1 == random.randint(1, 10 * FPSGAME):
-            groesse = random.randint(1, self.popGroesse - 1)
-            starta = random.randint(0, 359)
-            self.game.addCreature(Schnecke, (self.posx, self.posy), self.player,
-                                  starta, [self.hunger, self.alter, self.mutationen[:], groesse])
-            self.popGroesse -= groesse
+    # def randomteilen(self):
+    #     if self.popGroesse >= TEILPOPGROESSESCHNECKE and 1 == random.randint(1, 10 * FPSGAME):
+    #         groesse = random.randint(1, self.popGroesse - 1)
+    #         starta = random.randint(0, 359)
+    #         self.game.addCreature(Schnecke, (self.posx, self.posy), self.player,
+    #                               starta, [self.hunger, self.alter, self.mutationen[:], groesse])
+    #         self.popGroesse -= groesse
 
 
 class Kaefer(Lebewesen):
@@ -302,7 +317,7 @@ class Kaefer(Lebewesen):
         Lebewesen.__init__(self, game, startpos, startangle, infoweiter)
         self.standardSpeed = self.speed = KAEFERV
         self.standardspeed = KAEFERV
-        self.eatSpeed = self.popGroesse * KAEFERESSEN
+        self.eatSpeed = KAEFERESSEN
         self.hungerResistenz = KAEFERHUNGERRES
         self.standardW = FITNESS_KAEFER
         self.hungerproframe = HUNGERKAEFER / FPSGAME
@@ -311,6 +326,7 @@ class Kaefer(Lebewesen):
         self.optimalTemp, self.tempRange = KAEFERTEMP, KAEFERTEMPRANGE
         self.standardEvasion = KAEFEREVASION
         self.standardPrecision = KAEFERPREC
+        self.teilpopGroesse = TEILPOPGROESSEKAEFER
 
     def everyFrame(self):
         if self.game.frames > self.lastAngleChange + KAEFERDECINTERVAL * FPSGAME:
@@ -400,7 +416,7 @@ class Krabbe(Lebewesen):
         Lebewesen.__init__(self, game, startpos, startangle, infoweiter)
         self.moveBy(0, 0)
         self.standardSpeed = self.speed = KRABBEV
-        self.eatSpeed = self.popGroesse * KRABBEESSEN
+        self.eatSpeed = KRABBEESSEN
         self.hungerResistenz = KRABBEHUNGERRES
         self.standardW = FITNESS_KRABBE
         self.hungerproframe = HUNGERKRABBE / FPSGAME
@@ -561,26 +577,30 @@ class Singvogel(Lebewesen):
             self.opferImAuge = None
         else:
             self.speedMultEssen = 1
+            pflanzen = self.game.getPflanzenEssen(getTile(self.getPos()))
             if self.opferImAuge != None:
                 self.fliegen()
                 self.changeAngle(calcAngle(abst(self.getPos(), self.opferImAuge.getPos())), True)
                 if not self.opferImAuge.alive:
                     self.opferImAuge = None
+            #Suche Opfer. Wenn kein Opfer gefunden wird, wird sonst nichts getan
             elif self.opferImAuge == None and ((self.game.frames - self.geboren) %
                                                (SINGVOGELDECINTERVAL / 5 * FPSGAME) == 0 and self.hunger > 0.5):
                 self.opferImAuge = self.findeOpfer(1)
-            elif self.game.getPflanzenEssen(getTile(self.getPos())) > 0.01 and self.hunger > 0.01:
+            elif pflanzen > 0.01 and self.hunger > 0.01 and not self.imFlug:
+                self.speedMultEssen = 0.5
+                self.pflanzenfressen()
+            elif pflanzen > SINGVOGELESSENGRENZE*2 and self.hunger > 0.01:
                 self.nichtFliegen()
                 self.speedMultEssen = 0.5
                 self.pflanzenfressen()
+            elif (self.game.frames - self.geboren) % (SINGVOGELDECINTERVAL / 5 * FPSGAME) == 1:
+                if self.hunger >= SINGVOGELHUNGERRES / 2 and pflanzen < SINGVOGELESSENGRENZE:
+                    self.fliegen()
             else:
                 if self.game.frames > self.lastAngleChange + SINGVOGELDECINTERVAL * FPSGAME:
                     self.lastAngleChange = self.game.frames
                     self.changeAngle(random.random() * 90 - 45)
-                if self.hunger < SINGVOGELHUNGERRES / 2:
-                    self.nichtFliegen()
-                else:
-                    self.fliegen()
             lwInTile = self.game.getLivingThingsInTile(self.tile)
             for gegner in lwInTile:
                 if gegner.desc in self.opfer and self.hunger > 0.5:
@@ -616,7 +636,6 @@ class Doktorfisch(Lebewesen):
         Lebewesen.__init__(self, game, startpos, startangle, infoweiter)
         self.standardSpeed = self.speed = DOKTORFISCHV
         self.moveBy(0, 0)
-        self.standardspeed = DOKTORFISCHV
         self.eatSpeed = DOKTORFISCHESSEN
         self.hungerResistenz = DOKTORFISCHHUNGERRES
         self.standardW = FITNESS_DOKTORFISCH
@@ -816,12 +835,17 @@ class Kaninchen(Lebewesen):
         self.standardInt = KANINCHENINTELLIGENZ
         self.standardEvasion = KANINCHENEVASION
         self.standardPrecision = KANINCHENPREC
+        self.amFressen = 0
 
     def everyFrame(self):
         if self.game.frames > self.lastAngleChange + KANINCHENDECINTERVAL * FPSGAME:
             self.lastAngleChange = self.game.frames
             self.changeAngle(random.random() * 90 - 45)
-        if self.game.getPflanzenEssen(getTile(self.getPos())) > 0.01:
+            if self.game.getPflanzenEssen(getTile(self.getPos())) > 0.5:
+                self.amFressen = True
+            else:
+                self.amFressen = False
+        if self.amFressen:
             self.speedMultEssen = 0
             self.pflanzenfressen()
         else:

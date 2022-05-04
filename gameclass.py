@@ -211,7 +211,8 @@ class Game:
         if (0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry):
             stateextra = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
                                                           obj.id, obj.player, obj.imFlug,
-                                                          obj.hunger, obj.getFitness(), obj.mutationen) for obj in
+                                                          obj.hunger, obj.getFitness(),
+                                                           obj.getMutationNames()) for obj in
                                                          self.livingThings
                                                          if obj.id in animalIds or obj.tile == tile]
         else:
