@@ -2,8 +2,10 @@ from terrainstats import *
 STATS = ["Speed", "Eatspeed", "Hungerres", "Hungerpersec", "Fitness", "Decinterval", "Splitpop", "Size", "OptimalTemp",
          "Temprange", "Evasion", "Precision", "Int", "Power"]
 
+DEFAULTSTATS = {"PlantESMult" : [1,1,1]}
 # statsslug
 SCHNECKEBASESTATS = {"Speed": 2.5, "Eatspeed": 0.05,  # Essen pro Tier und Sekunde
+                     "PlantESMult" : [1,1,1],
                      "Hungerres": 2, "Hungerpersec": 0.009, "Fitness": 1.018,
                      # ~ Chance eines Tiers sich zu teilen pro Sekunde
                      "Decinterval": 2, "Startpop": 15, "Splitpop": 50, "Size": 1, "Targets": [], "OptimalTemp": 25,
@@ -59,28 +61,9 @@ KAEFEREVASION = -3
 KAEFERPREC = -2
 
 
-# SINGVOGELstats
-
-SINGVOGELVGEHEND = 5
-SINGVOGELVFLIEGEND = 25
-SINGVOGELESSEN = 0.2  # Essen pro Tier und Sekunde
-SINGVOGELHUNGERRES = 1.2
-HUNGERSINGVOGELGEHEND = 0.07
-HUNGERSINGVOGELFLIEGEND = 0.10
-FITNESS_SINGVOGEL = 1.013  # ~ Chance einer Schnecke sich zu teilen pro Sekunde
-SINGVOGELDECINTERVAL = 4
-TEILPOPGROESSESINGVOGEL = 15
-SINGVOGELGROESSE = 5
-ANGRIFFSLISTESINGVOGEL = ["Schnecke", "Käfer"]
-SINGVOGELTEMP, SINGVOGELTEMPRANGE = 25, 15
-SINGVOGELINTELLIGENZ = 2
-SINGVOGELSTAERKE = 2
-SINGVOGELEVASION = 1
-SINGVOGELPREC = 2
-SINGVOGELESSENGRENZE = 0.5
-
 # statsmouse
 MAUSBASESTATS = {"Speed": 8, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
+                 "PlantESMult" : [1, 1, 0.3],
                  "Hungerres": 1.2, "Hungerpersec": 0.09, "Fitness": 1.012,
                  # ~ Chance eines Tiers sich zu teilen pro Sekunde
                  "Decinterval": 3, "Startpop": 5, "Splitpop": 30, "Size": 3, "Targets": ["Schnecke", "Käfer"],
@@ -151,6 +134,7 @@ FALKEEVASION = 2
 FALKEPREC = 3
 # SINGVOGELstats
 SINGVOGELBASESTATS = {"Speed": 5, "SpeedFLY": 25, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
+                      "PlantESMult" : [1,0.5,0],
                       "Hungerres": 1.2, "Hungerpersec": 0.04, "HungerpersecFLY": 0.06, "Fitness": 1.013,
                       # ~ Chance eines Tiers sich zu teilen pro Sekunde
                       "Decinterval": 4, "Startpop": 7, "Splitpop": 20, "Size": 5, "Targets": ["Schnecke", "Käfer"],
@@ -213,7 +197,8 @@ FUCHSEVASION = 1
 FUCHSPREC = 2
 
 # statskaninchen
-KANINCHENBASESTATS = {"Speed": 15, "Eatspeed": 0.3,  # Essen pro Tier und Sekunde
+KANINCHENBASESTATS = {"Speed": 15, "Eatspeed": 0.4,  # Essen pro Tier und Sekunde
+                      "PlantESMult" : [0.5,1,1],
                       "Hungerres": 1.0, "Hungerpersec": 0.08, "Fitness": 1.011,
                       # ~ Chance eines Tiers sich zu teilen pro Sekunde
                       "Decinterval": 3, "Startpop": 5, "Splitpop": 25, "Size": 5, "Targets": [],
@@ -235,7 +220,8 @@ KANINCHENEVASION = 1
 KANINCHENPREC = -2
 
 # statsziege
-ZIEGEBASESTATS = {"Speed": 20, "Eatspeed": 0.3,  # Essen pro Tier und Sekunde
+ZIEGEBASESTATS = {"Speed": 20, "Eatspeed": 0.5,  # Essen pro Tier und Sekunde
+                  "PlantESMult" : [0.2, 0.5, 1],
                   "Hungerres": 2., "Hungerpersec": 0.15, "Fitness": 1.006,
                   # ~ Chance eines Tiers sich zu teilen pro Sekunde
                   "Decinterval": 3, "Startpop": 4, "Splitpop": 10, "Size": 5, "Targets": [],

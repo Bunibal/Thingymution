@@ -119,13 +119,15 @@ class Game:
     def getPflanzenEssen(self, tile, groesse = "ges"):
         if groesse == "ges":
             return sum(art[tile[0], tile[1]] for art in self.pflanzenMenge)
+        if groesse == "list":
+            return [art[tile[0], tile[1]] for art in self.pflanzenMenge]
         return self.pflanzenMenge[groesse][tile[0], tile[1]]
 
     def setPflanzenEssen(self, tile, amount, size):
         self.pflanzenMenge[size][tile[0], tile[1]] = amount
 
     def essePflanzen(self, tile, amount, size):
-        self.setPflanzenEssen(tile, self.getPflanzenEssen(tile) - amount, size)
+        self.setPflanzenEssen(tile, self.getPflanzenEssen(tile, size) - amount, size)
 
     def getFrischFleischInfo(self, tile):
         return self.tileMatrix[tile[0]][tile[1]]["FrischFleisch"]
@@ -179,9 +181,10 @@ class Game:
         #         essen = self.getPflanzenEssen((x, y))
         #         neuEssen = min(mean * MAXPFLANZEN, essen + mean * PFLANZENREGENERATION)
         #         self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen
-        added = self.pflanzenMenge[0] + \
-                self.terrainFoodRegen * PFLANZENREGENERATION * frames / FPSGAME
-        self.pflanzenMenge[0] = np.minimum(self.terrainFoodRegen * MAXPFLANZEN, added)
+        for i in range(len(self.pflanzenMenge)):
+            new = self.pflanzenMenge[i] + \
+                self.terrainFoodRegen * PFLANZENREGENERATION[i] * frames / FPSGAME
+            self.pflanzenMenge[i] = np.minimum(self.terrainFoodRegen * MAXPFLANZEN[i], new)
 
     def getLivingThingsInTile(self, tile):
         if not ((0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry)):

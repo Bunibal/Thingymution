@@ -112,11 +112,14 @@ class Lebewesen:
     def pflanzenfressen(self):
         if self.isHerbivore() and self.alive:
             kapazitaet = self.hunger * self.popGroesse
-            verfuegbar = self.game.getPflanzenEssen(getTile(self.getPos()))
-            essenMenge = min(kapazitaet, verfuegbar,
-                             self.getEatSpeed() * self.popGroesse / CFPSGAME)
-            self.game.essePflanzen(getTile(self.getPos()), essenMenge, 0)
-            self.hunger -= essenMenge / self.popGroesse
+            verfuegbar = self.game.getPflanzenEssen(getTile(self.getPos()),
+                                                    groesse="list")
+            essenMenge = [min(kapazitaet, verfuegbar[i],
+                        self.getEatSpeed() * self.getPlantESMult()[i] * \
+                              self.popGroesse / CFPSGAME) for i in range(len(verfuegbar))]
+            art = np.argmax(essenMenge)
+            self.game.essePflanzen(getTile(self.getPos()), essenMenge[art], art)
+            self.hunger -= essenMenge[art] / self.popGroesse
 
     def populationAnpassen(self):
         zeitVerg = 1 / CFPSGAME
@@ -334,6 +337,12 @@ class Lebewesen:
 
     def nichtFliegen(self):
         self.imFlug = False
+
+    def getPlantESMult(self):
+        if "PlantESMult" in self.basestats.keys():
+            return self.basestats["PlantESMult"]
+        else:
+            return DEFAULTSTATS["PlantESMult"]
 
     def verteidigen(self, anderesObj, menge):
         pass
