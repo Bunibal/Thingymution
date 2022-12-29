@@ -125,7 +125,7 @@ class Lebewesen:
             essenMenge = min(kapazitaet, verfuegbar,
                              self.eatSpeed * self.popGroesse / FPSGAME,
                              self.eatSpeed * verfuegbar * self.popGroesse / FPSGAME)
-            self.game.setPflanzenEssen(getTile(self.getPos()), verfuegbar - essenMenge)
+            self.game.essePflanzen(getTile(self.getPos()), essenMenge)
             self.hunger -= essenMenge / self.popGroesse
 
     def populationAnpassen(self):

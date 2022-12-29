@@ -666,7 +666,11 @@ class Execute:
         tileRN = getTile(self.getMapPos(self.mauspos))
         if 0 <= tileRN[0] < self.tilenbrx and 0 <= tileRN[1] < self.tilenbry:
             try:
-                text = self.font2.render("Essen: %.1f" % self.game.getPflanzenEssen(tileRN), 1, (0, 0, 0))
+                text = self.font2.render("Essen: %.1f / %.1f / %.1f" \
+                                         %(self.game.getPflanzenEssen(tileRN, 0),
+                                          self.game.getPflanzenEssen(tileRN, 1),
+                                           self.game.getPflanzenEssen(tileRN, 2)),
+                                            True, (0, 0, 0))
             except:
                 print(self.plantFoodInTile, "ist keine Zahl")
                 fehler

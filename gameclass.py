@@ -4,6 +4,8 @@ from terrainstats import *
 from Bildermusicsounds import MAPFILES
 from skilltreeclass import *
 
+import numpy as np
+
 
 def getTileTerrainAndSet(map, pos, layer=3, schonGefunden=[-1, -1, -1, -1]):
     try:
@@ -60,6 +62,16 @@ class Game:
             for y in range(self.tilenbry):
                 self.tileMatrix[x][y] = {"PflanzenEssen": 0, "FrischFleisch": [], "Lebewesen": [],
                                          "Terrain": getTileTerrainAndSet(self.mapFile, (x, y))}
+        self.terrainFoodRegen = np.zeros((self.tilenbrx, self.tilenbry))
+        for x in range(self.tilenbrx):
+            for y in range(self.tilenbry):
+                terrains = self.tileMatrix[x][y]["Terrain"]
+                mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
+                self.terrainFoodRegen[x, y] = mean
+        self.pflanzenMenge = [np.zeros((self.tilenbrx, self.tilenbry)),
+                              np.zeros((self.tilenbrx, self.tilenbry)),
+                              np.zeros((self.tilenbrx, self.tilenbry))]
+        # Von klein nach Gross geordnet
         self.mutations_list = []
         self.creatureIdCount = 0
         self.modifiers = []
@@ -71,7 +83,7 @@ class Game:
 
     def step(self):
         self.frames += 1
-        self.pflanzenRegenerieren(self.frames % FPSGAME, FPSGAME)
+        self.pflanzenRegenerieren(1)
         for obj in self.livingThings[:]:
             if obj.alive:
                 obj.everyFrame()
@@ -100,11 +112,16 @@ class Game:
         mod = TempModifier(self.frames, duration, amount, location)
         self.modifiers.append(mod)
 
-    def getPflanzenEssen(self, tile):
-        return self.tileMatrix[tile[0]][tile[1]]["PflanzenEssen"]
+    def getPflanzenEssen(self, tile, groesse = "ges"):
+        if groesse == "ges":
+            return sum(art[tile[0], tile[1]] for art in self.pflanzenMenge)
+        return self.pflanzenMenge[groesse][tile[0], tile[1]]
 
-    def setPflanzenEssen(self, tile, essen):
-        self.tileMatrix[tile[0]][tile[1]]["PflanzenEssen"] = essen
+    def setPflanzenEssen(self, tile, amount, size):
+        self.pflanzenMenge[size][tile[0], tile[1]] = amount
+
+    def essePflanzen(self, tile, amount, size):
+        self.setPflanzenEssen(tile, self.getPflanzenEssen(tile) - amount, size)
 
     def getFrischFleischInfo(self, tile):
         return self.tileMatrix[tile[0]][tile[1]]["FrischFleisch"]
@@ -150,14 +167,17 @@ class Game:
         else:
             print(objekte1.desc, "evades", objekte2.desc)
 
-    def pflanzenRegenerieren(self, section, numberofSections):
-        for x in range(section, self.tilenbrx, numberofSections):
-            for y in range(self.tilenbry):
-                terrains = self.tileMatrix[x][y]["Terrain"]
-                mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
-                essen = self.getPflanzenEssen((x, y))
-                neuEssen = min(mean * MAXPFLANZEN, essen + mean * PFLANZENREGENERATION)
-                self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen
+    def pflanzenRegenerieren(self, frames):
+        # for x in range(section, self.tilenbrx, numberofSections):
+        #     for y in range(self.tilenbry):
+        #         terrains = self.tileMatrix[x][y]["Terrain"]
+        #         mean = sum([PLANTGROWTH[t] for t in terrains]) / 4
+        #         essen = self.getPflanzenEssen((x, y))
+        #         neuEssen = min(mean * MAXPFLANZEN, essen + mean * PFLANZENREGENERATION)
+        #         self.tileMatrix[x][y]["PflanzenEssen"] = neuEssen
+        added = self.pflanzenMenge[0] + \
+                self.terrainFoodRegen * PFLANZENREGENERATION * frames / FPSGAME
+        self.pflanzenMenge[0] = np.minimum(self.terrainFoodRegen * MAXPFLANZEN, added)
 
     def getLivingThingsInTile(self, tile):
         if not ((0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry)):
