@@ -115,8 +115,7 @@ class Lebewesen:
             verfuegbar = self.game.getPflanzenEssen(getTile(self.getPos()))
             essenMenge = min(kapazitaet, verfuegbar,
                              self.getEatSpeed() * self.popGroesse / CFPSGAME)
-            self.game.setPflanzenEssen(getTile(self.getPos()), verfuegbar - essenMenge)
-            #TODO: essePflanzen verwenden
+            self.game.essePflanzen(getTile(self.getPos()), essenMenge, 0)
             self.hunger -= essenMenge / self.popGroesse
 
     def populationAnpassen(self):
@@ -260,20 +259,11 @@ class Lebewesen:
             self.angle += angle
         self.direction = getSpeeds(1, self.angle)
 
+
     def getPos(self):
         return self.posx, self.posy
 
     def getRealFitness(self):
-    def randomteilen(self):
-        if self.popGroesse >= self.teilpopGroesse and 1 == random.randint(1, 10 * FPSGAME):
-            groesse = random.randint(1, self.popGroesse - 1)
-            starta = random.randint(0, 359)
-            self.game.addCreature(type(self), (self.posx, self.posy), self.player,
-                                  starta, [self.hunger, self.alter, self.mutationen[:], groesse])
-            self.popGroesse -= groesse
-
-    def getFitness(self):
-        mutboost = (self.standardW - 1) * self.mutierteStats["FITNESS"]
         tmp = self.game.getTemp(self.terrain, self.tile)
         temperaturAnpassung = np.exp(-((tmp - self.stats["OptimalTemp"]) / self.stats["Temprange"]) ** 2 / 2 * TEMPANPASSKOEFF)
         w1 = (self.stats["Fitness"] - (self.hunger / self.getHungerResistence()) ** 3 * TODFAKTOR)
@@ -838,6 +828,7 @@ class Kaninchen(Lebewesen):
 
     def __init__(self, game, startpos, startangle=0, info=None):
         Lebewesen.__init__(self, game, startpos, startangle, info)
+        self.amFressen = False
         # self.standardSpeed = self.speed = KANINCHENV
         # self.standardspeed = KANINCHENV
         # self.eatSpeed = KANINCHENESSEN
