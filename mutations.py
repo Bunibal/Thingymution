@@ -6,11 +6,9 @@ PRECISIONBOOSTBONUS = 1
 INTBOOSTBONUS = 1
 INTBOOSTMULT = 1  # Das heisst mal 2
 
-STATSZUMUTIEREN = ["SPEED", "FITNESS", "EVASION", "PRECISION", "INTFLAT", "INTMULT"]
-
 # Mutationen
-getFast = {"Name": "getFast", "Stats": {"SPEED": GETFASTBONUS}}
-getFitness = {"Name": "getFitness", "Stats": {"FITNESS": FITNESSBOOSTBONUS}}
-getEvasion = {"Name": "getEvasion", "Stats": {"EVASION": EVASIONBOOSTBONUS}}
-getPrecision = {"Name": "getPrecision", "Stats": {"PRECISION": PRECISIONBOOSTBONUS}}
-getInt = {"Name": "getIntelligence", "Stats": {"INTFLAT": INTBOOSTBONUS, "INTMULT": INTBOOSTMULT}}
+getFast = {"Name": "getFast", "Stats": {"Speed": GETFASTBONUS}}
+getFitness = {"Name": "getFitness", "Stats": {"Fitness": FITNESSBOOSTBONUS}}
+getEvasion = {"Name": "getEvasion", "Stats": {"Evasion": EVASIONBOOSTBONUS}}
+getPrecision = {"Name": "getPrecision", "Stats": {"Precision": PRECISIONBOOSTBONUS}}
+getInt = {"Name": "getIntelligence", "Stats": {"IntFLAT": INTBOOSTBONUS, "Int": INTBOOSTMULT}}

@@ -1,8 +1,10 @@
+import datetime
 from gameclass import *
-from _thread import *
-from pygame.time import Clock
-from gameelements import TIERE, EVENTS, POINTS
 from network import *
+from _thread import *
+from pygame.time import Clock, get_ticks
+from gameelements import TIERE, EVENTS, POINTS
+
 
 pygame.quit() # weil pygame gestartet wird
 TIERCAP = 10000
@@ -37,13 +39,19 @@ def threaded_simulation():
     print("Simulation gestartet")
     uhr = Clock()
     gameLaeuft = True
+    lastFrames = 0
+    lastTime = get_ticks()
     while gameLaeuft:
-        uhr.tick(20)
+        uhr.tick(FPSGAME)
         if not isBlocking():
             game.step()
+            if (game.frames - lastFrames) >= 5*FPSGAME:
+                now = get_ticks()
+                print("Game Laeuft, Kreaturen:", len(game.livingThings))
+                print("FPS:", (game.frames - lastFrames) / (now-lastTime) * 1000)
+                lastTime = get_ticks()
+                lastFrames = game.frames
             if game.frames >= 20 * GAMELENGTH:
-                print("Gameaus")
-                print(points)
                 gameover = True
             elif game.frames % (20 * SEKUNDENZUG) == 0:
                 forcePausing = playerCount * [True]
@@ -51,12 +59,18 @@ def threaded_simulation():
                 pointsRN = game.getpoints(playerCount, POINTS)
                 for i in range(len(points)):
                     points[i] += pointsRN[i]
+        else:
+            if game.frames > lastFrames:
+                now = get_ticks()
+                print("FPS:", (game.frames - lastFrames) / (now-lastTime) * 1000)
+                lastFrames = game.frames
+            lastTime = get_ticks()
         newNots = game.retrieveNotifications()
         for notf in newNots:
             for plI in activePlayers:
                 notifications[plI].append(notf)
-        if game.frames % 100 == 1:
-            print("Game Laeuft, Kreaturen:", len(game.livingThings))
+
+
 
 
 def isBlocking():

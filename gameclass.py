@@ -49,7 +49,6 @@ class TempModifier(Modifier):
         self.amount, self.location = amount, location
         self.rect = pygame.rect.Rect(location)
 
-
 # Spiel, animieren
 class Game:
     def __init__(self, mapNr):
@@ -86,7 +85,10 @@ class Game:
         self.pflanzenRegenerieren(1)
         for obj in self.livingThings[:]:
             if obj.alive:
-                obj.everyFrame()
+                if self.frames % BIGSTEPEVERY == obj.cycle:
+                    obj.everyComplexFrame()
+                else:
+                    obj.everySimpleFrame()
             if not obj.alive:
                 self.livingThings.remove(obj)
                 self.tileMatrix[obj.tile[0]][obj.tile[1]]["Lebewesen"].remove(obj)
@@ -95,10 +97,12 @@ class Game:
                 print(mod.effectType, "has ended")
                 self.modifiers.remove(mod)
 
+
     def addCreature(self, type, startpos, player=-1, startangle=None, info=None):
         newCreature = type(self, startpos, startangle, info)
         newCreature.id = self.creatureIdCount
         newCreature.player = player
+        newCreature.cycle = random.randint(0, BIGSTEPEVERY - 1)
         self.creatureIdCount += 1
         self.livingThings.append(newCreature)
         self.sendNotification("Tier gespawnt", newCreature.desc)
@@ -146,7 +150,7 @@ class Game:
             print("Warnung! Zuviel zu essen gemacht!")
         obj.changePop(-menge)
         tilex, tiley = getTile(obj.getPos())
-        self.tileMatrix[tilex][tiley]["FrischFleisch"].append([self.frames, obj.desc, 0, menge * obj.groesse])
+        self.tileMatrix[tilex][tiley]["FrischFleisch"].append([self.frames, obj.desc, 0, menge * obj.getSize()])
 
     def kampfaustragen(self, objekte1, objekte2, menge):
         prec1, ev2 = objekte1.getPrecision(), objekte2.getEvasion()
@@ -155,10 +159,10 @@ class Game:
         else:
             evchance = 1 - np.power(2.0, prec1 - ev2)
         if random.random() > evchance:  # If not evaded
-            if objekte1.staerke > objekte2.staerke:
+            if objekte1.getPower() > objekte2.getPower():
                 self.macheZuEssen(objekte2, menge)
 
-            elif objekte2.staerke > objekte1.staerke:
+            elif objekte2.getPower() > objekte1.getPower():
                 self.macheZuEssen(objekte1, menge)
             else:
                 tode1 = np.random.binomial(menge, 0.5)
@@ -187,8 +191,8 @@ class Game:
     def getTerrain(self, pos, mapCoords=True):
         if not mapCoords:
             pos = self.getMapPos(pos)
-        x, y = mult(pos, 1 / 16, True)
-        x1, y1 = mult(pos, 1 / 8, True)
+        x, y = getTile(pos)
+        x1, y1 = mult(pos, 1/8, True)
         xx, yy = x1 % 2, y1 % 2
         return self.tileMatrix[x][y]["Terrain"][xx + 2 * yy]
 
@@ -230,11 +234,11 @@ class Game:
                      obj.id, obj.player, obj.imFlug) for obj in self.livingThings]
         if (0 <= tile[0] < self.tilenbrx) and (0 <= tile[1] < self.tilenbry):
             stateextra = [self.getPflanzenEssen(tile)] + [(obj.desc, obj.getPos(), obj.popGroesse,
-                                                          obj.id, obj.player, obj.imFlug,
-                                                          obj.hunger, obj.getFitness(),
+                                                           obj.id, obj.player, obj.imFlug,
+                                                           obj.hunger, obj.getRealFitness(),
                                                            obj.getMutationNames()) for obj in
-                                                         self.livingThings
-                                                         if obj.id in animalIds or obj.tile == tile]
+                                                          self.livingThings
+                                                          if obj.id in animalIds or obj.tile == tile]
         else:
             stateextra = [None]
         return (stateall, stateextra)
@@ -297,7 +301,9 @@ if __name__ == "__main__":
 
     game = Game(0)
     for i in range(999):
-        game.addCreature(Schnecke, (200, 1200))
+        game.addCreature(Kaefer, (200, 1200))
+        # game.addCreature(Maus, (200,1200))
+        #game.addCreature(Falke, (200, 1200))
     createAndMonitor(Schnecke, (200, 1200),
                      ["MUTGETFAST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST", "MUTFITNESSBOOST"],
                      steps=5000)

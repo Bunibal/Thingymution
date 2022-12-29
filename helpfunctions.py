@@ -22,6 +22,8 @@ def mult(v, a, toInteger=False):
         return int(v[0] * a), int(v[1] * a)
     return (v[0] * a, v[1] * a)
 
+def intDivision(v, a):
+    return int(v[0] // a), int(v[1] // a)
 
 def addieren(v1, v2):
     return (v1[0] + v2[0], v1[1] + v2[1])
@@ -36,13 +38,13 @@ def getSpeeds(speed, angle):
     return math.cos(angle) * speed, math.sin(angle) * speed
 
 
-def calcAngle(pos):
-    z = np.array(pos[0] + pos[1] * 1.j)
+def calcAngle(v):
+    z = np.array(v[0] + v[1] * 1.j)
     return np.angle(z) * 180 / math.pi
 
 
 def getTile(pos):
-    return mult(pos, 1 / 16, True)
+    return mult(pos, 1/16, True)
 
 def tileCoords(tile):
     return mult(tile, 16, True)
