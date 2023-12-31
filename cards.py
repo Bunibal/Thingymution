@@ -1,10 +1,37 @@
 from Bildermusicsounds import *
+from helpfunctions import getTile
 from mutations import *
 
 class Karte:
     def __init__(self):
         self.image = carddefault
         self.showAOE = False
+        self.targets = []
+        self._allTargetsChosen = False
+        
+    @property
+    def allTargetsChosen(self):
+        return self._allTargetsChosen
+    
+    def onCardPick(self, execlass):
+        if self.targeting == "NONE":
+            self._allTargetsChosen = True
+
+    def onChooseTarget(self, execlass, targetMapPos):
+        if self.targeting == "POS":
+            self.targets.append(targetMapPos)
+            if len(self.targets) >= self.targetNbr:
+                self._allTargetsChosen = True
+        elif self.targeting == "TILE":
+            self.targets.append(getTile(targetMapPos))
+            if len(self.targets) >= self.targetNbr:
+                self._allTargetsChosen = True
+
+
+    
+    def onAllTargetsChosen(self, execlass):
+        pass
+
 
 
 class SpawnTier(Karte):
@@ -15,10 +42,13 @@ class SpawnTier(Karte):
         self.art = art
         self.desc = "Spawne " + self.art
         self.anz = anzahl
+        self.targeting = "POS"
+        self.targetNbr = anzahl
 
-    def spielen(self, execlass):
-        for i in range(self.anz):
-            execlass.tiere.append(self.art)
+    def onAllTargetsChosen(self, execlass):
+        super().onAllTargetsChosen(execlass)
+        for target in self.targets:
+            execlass.spawn(self.art, target)
 
 
 class Spawnfalcon(SpawnTier):
@@ -78,87 +108,83 @@ class Spawngoat(SpawnTier):
         SpawnTier.__init__(self, "Ziege",
                            carddefault, "Landtier", 1)
 
+class MutationKarte(Karte):
+    def __init__(self):
+        super().__init__()
 
-class Getfast(Karte):
+    def onCardPick(self, execlass):
+        execlass.mutations_list = []
+        execlass.mutierteTiere = []
+        for m in self.mutations:
+            execlass.mutations_list.append(m)
+class Getfast(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = cardgetfast
         self.type = "Mutation"
         self.desc = "Geschwindigkeitsboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append(getFast)
+        self.mutations = [getFast] * 3
 
 
-class Fitnessboost(Karte):
+class Fitnessboost(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = cardfitnessboost
         self.type = "Mutation"
         self.desc = "Fitnessboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append(getFitness)
+        self.mutations  = [getFitness] * 3
 
 
-class Powerboost(Karte):
+
+class Powerboost(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = cardpowerboost
         self.type = "Mutation"
         self.desc = "Powerboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append(getPower) # Existiert noch nicht
+        self.mutations = [getPower] * 3
 
 
-class IntBoost(Karte):
+class IntBoost(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = cardintboost
         self.type = "Mutation"
         self.desc = "Intelligenzboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append(getInt)
+        self.mutations = [getInt] * 3
 
 
-class EvasionBoost(Karte):
+
+class EvasionBoost(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = carddefault
         self.type = "Mutation"
         self.desc = "Evasionboost"
-
-    def spielen(self, game):
-        for i in range(3):
-            game.mutations_list.append(getEvasion)
+        self.mutations = [getEvasion] * 3
 
 
-class PrecisionBoost(Karte):
+
+class PrecisionBoost(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = carddefault
         self.type = "Mutation"
         self.desc = "Precisionboost"
 
-    def spielen(self, game):
+    def onCardPick(self, game):
         for i in range(3):
             game.mutations_list.append(getPrecision)
 
 
-class Getflying(Karte):
+class Getflying(MutationKarte):
     def __init__(self):
         super().__init__()
         self.image = cardgetflying
         self.type = "Mutation"
         self.desc = "fliegt"
 
-    def spielen(self, game):
+    def onCardPick(self, game):
         game.mutations_list.append(getFlying)
 
 class Mutate(Karte):
@@ -171,7 +197,7 @@ class Mutate(Karte):
 
 class EventKarte(Karte):
     def __init__(self):
-        pass
+        super().__init__()
 
 
 class Meteorshower(Karte):
@@ -182,33 +208,36 @@ class Meteorshower(Karte):
         self.desc = "Meteorschauer"
         self.targeting = "NONE"
 
-    def spielen(self, execlass):
+    def onAllTargetsChosen(self, execlass):
         execlass.doevent("Meteor")
 
 class Heatwave(Karte):
     def __init__(self):
+        super().__init__()
         self.image = carddefault
         self.type = "Umwelt"
         self.desc = "Hitzewelle"
         self.targeting = "NONE"
 
-    def spielen(self, execlass):
+    def onAllTargetsChosen(self, execlass):
         execlass.doevent("Heatwave")
 
 
 class Coolwave(Karte):
     def __init__(self):
+        super().__init__()
         self.image = carddefault
         self.type = "Umwelt"
         self.desc = "Kältewelle"
         self.targeting = "NONE"
 
-    def spielen(self, execlass):
+    def onAllTargetsChosen(self, execlass):
         execlass.doevent("Coolwave")
 
 
 class Granade(Karte):
     def __init__(self):
+        super().__init__()
         self.image = carddefault
         self.type = "Umwelt"
         self.desc = "Granate"
@@ -217,9 +246,7 @@ class Granade(Karte):
         self.showAOE = True
         self.aoe = (4,4)
 
-    def spielen(self, execlass, targets):
-        execlass.doevent("Granade", targets)
+    def onAllTargetsChosen(self, execlass):
+        execlass.doevent("Granade", self.targets)
 
 
-    def spielen(self, execlass, targets):
-        execlass.doevent("Granade", targets)

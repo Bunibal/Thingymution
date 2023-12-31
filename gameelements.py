@@ -19,4 +19,6 @@ KARTEN_VORHANDEN = {#MUTATIONEN: [Getfast, Fitnessboost, EvasionBoost, Precision
                     MUTATIONEN: [Mutate],
                     UMWELT: [Meteorshower, Heatwave, Coolwave, Granade],
                     LANDTIERE: [Spawnslug, Spawnmouse, Spawnbug, Spawnfox, Spawnrabbit, Spawngoat],
-                    WASSERTIERE: [Spawndoctorfish, Spawncrab], FLIEGER: [Spawnfalcon, Spawnbird]}
+                    WASSERTIERE: [], #[Spawndoctorfish, Spawncrab], 
+                    FLIEGER: [Spawnfalcon, Spawnbird]}
+ALLE_KARTEN = sum(KARTEN_VORHANDEN.values(), start=[])

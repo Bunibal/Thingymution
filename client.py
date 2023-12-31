@@ -40,6 +40,8 @@ class Execute:
         self.options = False
         self.posmap = (0, 0)
         self.zugpause = False
+        self.picking_card_targets = False
+        self.viewing_cards = False
         self.zeigeSpieler = True
         self.zeigeStats = False
         for img in images:
@@ -74,21 +76,21 @@ class Execute:
             self.menuanimieren()
             for event in pygame.event.get():
                 mx, my = pygame.mouse.get_pos()
-                click = False
+                self.click = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
-                        click = True
+                        self.click = True
                     if self.buttons[0].collidepoint((mx, my)):
-                        if click:
+                        if self.click:
                             self.singleplayermenu()
                     if self.buttons[1].collidepoint((mx, my)):
-                        if click:
+                        if self.click:
                             self.ipmenu()
                     if self.buttons[2].collidepoint((mx, my)):
-                        if click:
+                        if self.click:
                             self.options()
                     if self.buttons[3].collidepoint((mx, my)):
-                        if click:
+                        if self.click:
                             pygame.quit()
                             sys.exit()
                 self.standardHandling(event)
@@ -104,10 +106,10 @@ class Execute:
             self.singleplayermenuanimieren()
             for event in pygame.event.get():
                 mx, my = pygame.mouse.get_pos()
-                click = False
+                self.click = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
-                        click = True
+                        self.click = True
                         for button in self.lvlbutton_list:
                             if button.checkCollision((mx, my)):
                                 map = self.lvlbutton_list.index(button)
@@ -131,17 +133,17 @@ class Execute:
             self.ipmenuanimieren()
             for event in pygame.event.get():
                 mx, my = pygame.mouse.get_pos()
-                click = False
+                self.click = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
-                        click = True
+                        self.click = True
                     if buttonEnter.checkCollision((mx, my)):
-                        if click:
+                        if self.click:
                             ip = self.ipFeld.text
                             self.enterMultiPlayerGame(ip)
                             return
                     if buttonReturn.checkCollision((mx, my)):
-                        if click:
+                        if self.click:
                             return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
@@ -181,11 +183,11 @@ class Execute:
         self.testsktr = Skilltree(pygame.Surface(GROESSE), "slug")
         self.skilltreePoints = 4
         mausx, mauxy = self.mauspos = (0, 0)
-        mapverschieben = False
+        self.mapverschieben = False
         self.oikeymemory = [False, False]
         self.button_list = TIERE
         self.buttonsgame = []
-        self.tiere = []
+        self.animals_in_queue = []
         self.font2 = pygame.font.SysFont("Times", 30)
         self.zoomfaktor = 1
         self.mapzoomed = zuschneiden_image(self.mapPicture,
@@ -196,97 +198,157 @@ class Execute:
             i += 50
             self.buttonsgame.append(button)
         self.buttonsgame.append(ButtonGame((BARBREITE + 30, i), "Skilltree"))
+        self.buttonsgame.append(ButtonGame((BARBREITE + 30, i + 30), "Karten"))
         self.framescounterzug = 0
         self.msg = [False]
 
+        self.current_cards = []
+        self.card_rects = []
+
         # self.interpretServerMsg(incMsg)
         while self.inGame:
-            self.uhr.tick(FPSGAME)
-            if not self.singleplayer:
-                self.msg.append((INFOANIMALS, self.specialInfoAnimals))
-                incMsg = self.theNetwork.send(self.msg)
-                self.msg = [False]
-                self.interpretServerMsg(incMsg)
-            else:
-                if self.game.frames % (FPSGAME * SEKUNDENZUG) == 0:
-                    self.neuerZug()
-                self.game.step()
-                self.gameInfo = self.game.livingThings
-            if not self.inskilltree:
-                self.animieren()
-            else:
-                self.animierenSkillTree()
+            self.one_frame()
+            pass
 
-            if self.oikeymemory[0] and self.zoomfaktor >= 0.5:
-                self.zoom(ZOOM)
-            if self.oikeymemory[1] and self.zoomfaktor <= 4:
-                self.zoom(1 / ZOOM)
+    def one_frame(self):
+        self.uhr.tick(FPSGAME)
+        if self.game.frames % (KARTEN_RATE * FPSGAME) == 0:
+            self.add_random_card()
+        if not self.singleplayer:
+            self.msg.append((INFOANIMALS, self.specialInfoAnimals))
+            incMsg = self.theNetwork.send(self.msg)
+            self.msg = [False]
+            self.interpretServerMsg(incMsg)
+        else:
+            self.game.step()
+            self.gameInfo = self.game.livingThings
+            # if not self.inskilltree: 
+            #self.animieren()
+            # else:
+            #     self.animierenSkillTree()
+            # No skilltree used
+        self.animieren()
 
-            for event in pygame.event.get():
-                self.standardHandling(event)
-                mx, my = pygame.mouse.get_pos()
-                click = False
+
+
+
+        if self.oikeymemory[0] and self.zoomfaktor >= 0.5:
+            self.zoom(ZOOM)
+        if self.oikeymemory[1] and self.zoomfaktor <= 4:
+            self.zoom(1 / ZOOM)
+
+        self.handle_events()
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            self.standardHandling(event)
+            mx, my = pygame.mouse.get_pos()
+            self.click = False
                 # zoomen
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_k:
-                        self.killserver()
-                    if event.key == pygame.K_m:
-                        return
-                    if event.key == pygame.K_o:
-                        self.oikeymemory[0] = True
+            if event.type == pygame.KEYDOWN:
+                return self.handle_keydown(event)
 
-                    if event.key == pygame.K_c:
-                        self.zeigeSpieler = not self.zeigeSpieler
+            elif event.type == pygame.MOUSEMOTION:
+                self.handle_mousemotion(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.handle_mousebutton_down(event)
 
-                    if event.key == pygame.K_s:
-                        self.zeigeStats = not self.zeigeStats
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == pygame.BUTTON_LEFT:
+                    self.mapverschieben = False
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_o:
+                    self.oikeymemory[0] = False
+                if event.key == pygame.K_i:
+                    self.oikeymemory[1] = False
 
-                    if event.key == pygame.K_i:
-                        self.oikeymemory[1] = True
+    def handle_mousebutton_down(self, event):
+        if event.button == pygame.BUTTON_LEFT:
+            self.mouse_map_coord = abst(self.posmap, self.mauspos)
+            self.mapverschieben = True
+            self.click = True
+            self.handle_button_collisions()
+            if self.viewing_cards:
+                self.handle_card_collisions()
+            
+        if event.button == pygame.BUTTON_RIGHT:
+            if self.inskilltree:
+                if self.skilltreePoints > 0:
+                    mutpos = self.testsktr.unlock(self.mauspos)
+                    if mutpos != None:
+                        self.skilltreePoints -= 1
+                        self.unlockMutation(mutpos)
+            else:
+                if self.picking_card_targets:
+                    self.handle_card_target_collisions()
+                for creature in self.animals_in_queue:
+                    self.spawn(creature, self.getMapPos(self.mauspos), 10)
+                self.animals_in_queue = []
 
-                elif event.type == pygame.MOUSEMOTION:
-                    mausx, mausy = self.mauspos = event.pos
-                    self.msg.append((MOUSETILE, getTile(self.getMapPos(self.mauspos))))
-                    if mapverschieben:
-                        self.posmap = abst(mouseMapCoord, self.mauspos)
-                        self.mapzoomed = zuschneiden_image(self.mapPicture,
+    def handle_mousemotion(self, event):
+        self.mauspos = event.pos
+        self.msg.append((MOUSETILE, getTile(self.getMapPos(self.mauspos))))
+        if self.mapverschieben:
+            self.posmap = abst(self.mouse_map_coord, self.mauspos)
+            self.mapzoomed = zuschneiden_image(self.mapPicture,
                                                            self.getMapPos((0, 0)) + mult((BARBREITE, HOEHE),
                                                                                          1 / self.zoomfaktor),
                                                            self.zoomfaktor)
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == pygame.BUTTON_LEFT:
-                        mouseMapCoord = abst(self.posmap, self.mauspos)
-                        mapverschieben = True
-                        click = True
-                        i = 0
-                        for it in TIERE:
-                            if self.buttonsgame[i].checkCollision(self.mauspos):
-                                if click:
-                                    self.tiere.append(it)
-                            i += 1
-                        if self.buttonsgame[-1].checkCollision(self.mauspos):
-                            if click:
-                                self.inskilltree = not self.inskilltree
-                    if event.button == pygame.BUTTON_RIGHT:
-                        if self.inskilltree:
-                            if self.skilltreePoints > 0:
-                                mutpos = self.testsktr.unlock(self.mauspos)
-                                if mutpos != None:
-                                    self.skilltreePoints -= 1
-                                    self.unlockMutation(mutpos)
-                        else:
-                            for creature in self.tiere:
-                                self.spawn(creature, self.getMapPos(self.mauspos), 10)
-                            self.tiere = []
 
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == pygame.BUTTON_LEFT:
-                        mapverschieben = False
-                elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_o:
-                        self.oikeymemory[0] = False
-                    if event.key == pygame.K_i:
-                        self.oikeymemory[1] = False
+    def handle_keydown(self, event):
+        if event.key == pygame.K_k:
+            self.killserver()
+        if event.key == pygame.K_m:
+            return
+        if event.key == pygame.K_o:
+            self.oikeymemory[0] = True
+
+        if event.key == pygame.K_c:
+            self.zeigeSpieler = not self.zeigeSpieler
+
+        if event.key == pygame.K_s:
+            self.zeigeStats = not self.zeigeStats
+
+        if event.key == pygame.K_i:
+            self.oikeymemory[1] = True
+
+    def handle_card_collisions(self):
+        for rect, card in self.card_rects:
+            if rect.collidepoint(self.mauspos):
+                self.active_card = card
+                self.enter_pick_targets()
+                self.remove_card(card)
+
+    def handle_card_target_collisions(self):
+        self.active_card.onChooseTarget(self, self.getMapPos(self.mauspos))
+        if self.active_card.allTargetsChosen:
+            self.end_choosing_targets()
+
+    def end_choosing_targets(self):
+        self.active_card.onAllTargetsChosen(self)
+        self.active_card = None
+        self.picking_card_targets = False
+        self.viewing_cards = True
+    
+    def enter_pick_targets(self):
+        self.picking_card_targets = True
+        self.viewing_cards = False
+        self.active_card.onCardPick(self)
+        if self.active_card.allTargetsChosen:
+            self.end_choosing_targets()
+
+
+    def handle_button_collisions(self):
+        for button in self.buttonsgame:
+            if button.checkCollision(self.mauspos):
+                if self.click:
+                    if button.label == "Skilltree":
+                        self.inskilltree = not self.inskilltree
+                    elif button.label == "Karten":
+                        if not self.picking_card_targets:
+                            self.viewing_cards = not self.viewing_cards
+                    elif button.label in TIERE.keys():
+                        self.animals_in_queue.append(button.label)
 
     def menuanimieren(self):
         i = 100
@@ -338,10 +400,10 @@ class Execute:
         self.mapzoomed = zuschneiden_image(self.mapPicture,
                                            self.getMapPos((0, 0)) + mult((BREITE, HOEHE), 1 / self.zoomfaktor),
                                            self.zoomfaktor)
-        mapverschieben = False
+        self.mapverschieben = False
         zugstart = True
-        self.cardpick = False
-        self.kartenspielen = False
+        self.picking_card_targets = False
+        self.viewing_cards = False
         self.zugpause = True
         while self.zugpause:
             self.uhr.tick(FPSGAME)
@@ -393,13 +455,10 @@ class Execute:
                 text = FONT2BIG.render("%i X " % self.steineOnTable, 1, SCHWARZ)
                 self.screen.blit(text, (BREITE // 2 - 100, HOEHE * 3 // 4 - 60))
 
-            if self.cardpick:
-                for karte in karten:
-                    self.screen.blit(karte.image, karte.rect)
-                    text = self.font2.render(karte.desc, 1, (0, 0, 0))
-                    self.screen.blit(text, karte.rect.bottomleft)
+            if self.picking_card_targets:
+                self.show_cards(karten)
 
-            if self.kartenspielen:
+            if self.viewing_cards:
                 self.screen.blit(buttons1, nextCardButton)
                 self.screen.blit(nextCardLabel,
                                  (nextCardButton.left + 20, nextCardButton.top))
@@ -417,7 +476,7 @@ class Execute:
             for event in pygame.event.get():
                 self.standardHandling(event)
                 mx, my = pygame.mouse.get_pos()
-                click = False
+                self.click = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_k:
                         self.killserver()
@@ -431,16 +490,16 @@ class Execute:
 
                 elif event.type == pygame.MOUSEMOTION:
                     mausx, mausy = self.mauspos = event.pos
-                    if mapverschieben:
-                        self.posmap = abst(mouseMapCoord, self.mauspos)
+                    if self.mapverschieben:
+                        self.posmap = abst(self.mouse_map_coord, self.mauspos)
                         self.mapzoomed = zuschneiden_image(self.mapPicture,
                                                            self.getMapPos((0, 0)) + mult((BREITE, HOEHE),
                                                                                          1 / self.zoomfaktor),
                                                            self.zoomfaktor)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
-                        mouseMapCoord = abst(self.posmap, self.mauspos)
-                        mapverschieben = True
+                        self.mouse_map_coord = abst(self.posmap, self.mauspos)
+                        self.mapverschieben = True
                         if endTurnButton.collidepoint(self.mauspos):
                             self.zugpause = False
                         if zugstart:
@@ -450,7 +509,7 @@ class Execute:
                                         self.steineOnTable -= 1
                                         self.stonetype[self.buttonszug.index(it)] += 1
                                         if self.steineOnTable == 0:
-                                            self.cardpick = True
+                                            self.picking_card_targets = True
                                             zugstart = False
                                             karten = handkarten(self.stonetype)
                                             i = 0
@@ -465,64 +524,21 @@ class Execute:
                                                             (BREITE // 8 + BREITE // 4 * (i - 3), HOEHE // 2 + 50),
                                                             GROESSECARD)
                                                 i += 1
-                        if self.cardpick:
+                        if self.picking_card_targets:
                             for karte in karten:
                                 if karte.rect.collidepoint(self.mauspos):
-                                    if karte.type == "Landtier" or karte.type == "Wassertier" or karte.type == "Flieger":
-                                        self.tiere = []
-                                        karte.spielen(self)
-                                    elif karte.type == "Mutation":
-                                        self.mutations_list = []
-                                        self.mutierteTiere = []
-                                        karte.spielen(self)
-                                    karten.remove(karte)
-                                    self.cardpick = False
-                                    self.kartenspielen = True
-                                    self.kartenGespielt += 1
-                                    aktiveKarte = karte
-                                    if karte.type == "Umwelt":
-                                        if karte.targeting == "NONE":
-                                            self.nextcard()
-                                        elif karte.targeting == "TILE":
-                                            self.targets = []
-                                    elif karte.type == "Mutiere":
-                                        self.mutated = 0
+                                    self.on_card_choose(karten, karte)
 
-                        if self.kartenspielen:
+                        if self.viewing_cards:
                             if nextCardButton.collidepoint(self.mauspos):
                                 self.nextcard()
 
                     if event.button == pygame.BUTTON_RIGHT:
-                        if self.kartenspielen:
-                            if aktiveKarte.type == "Landtier" or aktiveKarte.type == "Wassertier" or aktiveKarte.type == "Flieger":
-                                creature = self.tiere.pop(0)
-                                self.spawn(creature, self.getMapPos(self.mauspos))
-                                if len(self.tiere) == 0:
-                                    self.nextcard()
-                            elif aktiveKarte.type == "Mutation":
-                                if (self.objectOnMouse != None and
-                                        self.getId(self.objectOnMouse) not in self.mutierteTiere):
-                                    mut = self.mutations_list.pop(0)
-                                    id = self.getId(self.objectOnMouse)
-                                    self.addMutation(id, mut)
-                                    self.mutierteTiere.append(id)
-                                    if len(self.mutations_list) == 0:
-                                        self.nextcard()
-                            elif aktiveKarte.type == "Umwelt":
-                                if aktiveKarte.targeting == "TILE":
-                                    self.targets.append(self.getMouseTile())
-                                    if len(self.targets) >= aktiveKarte.targetNbr:
-                                        aktiveKarte.spielen(self, self.targets)
-                                        self.nextcard()
-                            elif aktiveKarte.type == "Mutiere":
-                                if self.objectOnMouse != None:
-                                    self.mutate(self.getId(self.objectOnMouse))
-                                    self.mutated += 1
-                                    if self.mutated >= aktiveKarte.targetNbr:
-                                        self.nextcard()
+                        if self.viewing_cards:
+                            self.choose_target(aktiveKarte)
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
-                        mapverschieben = False
+                        self.mapverschieben = False
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_o:
@@ -530,6 +546,52 @@ class Execute:
                     if event.key == pygame.K_i:
                         self.oikeymemory[1] = False
             pygame.display.flip()
+
+
+
+    def choose_target(self, card):
+        if card.type == "Landtier" or card.type == "Wassertier" or card.type == "Flieger":
+            creature = self.animals_in_queue.pop(0)
+            self.spawn(creature, self.getMapPos(self.mauspos))
+            if len(self.animals_in_queue) == 0:
+                return True
+        elif card.type == "Mutation":
+            if (self.objectOnMouse != None and
+                                        self.getId(self.objectOnMouse) not in self.mutierteTiere):
+                mut = self.mutations_list.pop(0)
+                id = self.getId(self.objectOnMouse)
+                self.addMutation(id, mut)
+                self.mutierteTiere.append(id)
+                if len(self.mutations_list) == 0:
+                    return True
+        elif card.type == "Umwelt":
+            if card.targeting == "TILE":
+                self.targets.append(self.getMouseTile())
+                if len(self.targets) >= card.targetNbr:
+                    card.spielen(self, self.targets)
+                    return True
+        elif card.type == "Mutiere":
+            if self.objectOnMouse != None:
+                self.mutate(self.getId(self.objectOnMouse))
+                self.mutated += 1
+                if self.mutated >= card.targetNbr:
+                    return True
+        return False
+
+    def show_cards(self, karten):
+        for rect, karte in self.card_rects:
+            self.screen.blit(karte.image, rect)
+            text = self.font2.render(karte.desc, 1, (0, 0, 0))
+            self.screen.blit(text, rect.bottomleft)
+
+    def generate_card_rects(self, amount):
+        for i in range(amount):
+            if i < 4:
+                yield pygame.rect.Rect((BREITE // 8 + BREITE // 4 * i, HOEHE // 2 - 350),
+                                                            GROESSECARD)
+            else:
+                yield pygame.rect.Rect((BREITE // 8 + BREITE // 4 * (i - 3), HOEHE // 2 + 50),
+                                                            GROESSECARD)
 
     def animieren(self):
         self.screen.fill((150, 150, 0))
@@ -563,6 +625,8 @@ class Execute:
             self.statusMultiPlayer()
         for button in self.buttonsgame:
             button.blitButton(self.screen)
+        if self.viewing_cards:
+            self.show_cards(self.current_cards)
         for message in self.messages:
             message.blitmessage(self.screen)
         if self.gameover:
@@ -590,9 +654,9 @@ class Execute:
             pygame.mixer.music.play()
 
     def zoom(self, factor, bar=True):
-        mouseMapCoord = mult(abst(self.posmap, self.mauspos), 1 / self.zoomfaktor)
+        self.mouse_map_coord = mult(abst(self.posmap, self.mauspos), 1 / self.zoomfaktor)
         self.zoomfaktor *= factor
-        self.posmap = mult(addieren(mult(mouseMapCoord, -self.zoomfaktor), self.mauspos), 1, True)
+        self.posmap = mult(addieren(mult(self.mouse_map_coord, -self.zoomfaktor), self.mauspos), 1, True)
         breite = BARBREITE
         if not bar:
             breite = BREITE
@@ -672,8 +736,7 @@ class Execute:
                                            self.game.getPflanzenEssen(tileRN, 2)),
                                             True, (0, 0, 0))
             except:
-                print(self.plantFoodInTile, "ist keine Zahl")
-                fehler
+                raise RuntimeError(f"{self.plantFoodInTile} ist keine Zahl")
             self.screen.blit(text, [100, 40])
         i = 50
         for tier in self.gameInfo:
@@ -715,12 +778,25 @@ class Execute:
                     self.screen.blit(text, [30, a])
                     a += 30
 
+    def add_random_card(self):
+        self.current_cards.append(random.choice(ALLE_KARTEN)())
+        self.update_card_rects()
+
+    def remove_card(self, card):
+        self.current_cards.remove(card)
+        self.update_card_rects()
+
+    def update_card_rects(self):
+        self.card_rects = []
+        for card, rect in zip(self.current_cards, 
+                              self.generate_card_rects(len(self.current_cards))):
+            self.card_rects.append((rect,card))
     def nextcard(self):
-        self.kartenspielen = False
+        self.viewing_cards = False
         if self.kartenGespielt >= ANZAHLKARTENSPIELEN:
             self.zugpause = False
         else:
-            self.cardpick = True
+            self.picking_card_targets = True
 
     def endgamescreen(self):
         text = FONT2.render("Game over", 1, SCHWARZ)
